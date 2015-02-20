@@ -25,6 +25,8 @@
             var result = JSON.parse(e.data);
             if (result.error) {
                 $rootScope.showSimpleDialog('Error sending request', result.error.message);
+            } else if (result.result.reply) {
+                $rootScope.showSimpleToast(result.result.reply.replace(new RegExp('\\\\_', 'g'), ' '));
             }
             else if (result && result.result.session_id) {
                 connection.authorized = true;
@@ -62,23 +64,23 @@
         }
 
         api.stowAll = function () {
-            return api.sendControlCommand('sys', 'operator-stow-antennas', '');
+            return api.sendControlCommand('sys', 'operator_stow_antennas', '');
         };
 
         api.inhibitAll = function () {
-            return api.sendControlCommand('sys', 'operator-inhibit-antennas', '');
+            return api.sendControlCommand('sys', 'operator_inhibit_antennas', '');
         };
 
         api.stopAll = function () {
-            return api.sendControlCommand('sys', 'operator-stop-observations', '');
+            return api.sendControlCommand('sys', 'operator_stop_observations', '');
         };
 
         api.resumeOperations = function () {
-            return api.sendControlCommand('sys', 'operator-resume-operations', '');
+            return api.sendControlCommand('sys', 'operator_resume_operations', '');
         };
 
         api.shutdownComputing = function () {
-            return api.sendControlCommand('sys', 'operator-shutdown-computing', '');
+            return api.sendControlCommand('sys', 'operator_shutdown_computing', '');
         };
 
         api.acknowledgeAlarm = function (alarmName) {

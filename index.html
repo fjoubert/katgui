@@ -75,13 +75,16 @@
 <script src="app/util/focus-directive.js"></script>
 <script src="app/util/editable-directive.js"></script>
 <script src="app/services/control-service.js"></script>
+<script src="app/services/config-service.js"></script>
 <script src="app/services/data-service.js"></script>
 <script src="app/services/monitor-service.js"></script>
 <script src="app/services/observation-schedule-service.js"></script>
 <script src="app/services/receptor-state-service.js"></script>
 <script src="app/services/user-service.js"></script>
 <script src="app/services/session-service.js"></script>
+<script src="app/services/status-service.js"></script>
 <script src="app/health/health.js"></script>
+<script src="app/health/receptor-status/receptor-status.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
 <script src="app/d3/d3-chart-directive.js"></script>
 <script src="app/d3/d3-treemap.js"></script>
@@ -117,15 +120,21 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
+                    <md-item-content style="border-bottom: 1px solid #e5e5e5; padding-bottom: 8px;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
                         <span class="fa fa-warning"></span>
                         <button>Alarms</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('health')">
-                        <span class="fa fa-th"></span>
-                        <button>Health & State</button>
+                    <md-item-content style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;" layout="column">
+                        <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('health')">
+                            <span class="fa fa-heart"></span>
+                            <button>Health & State</button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorStatus')">
+                            <span class="fa fa-th"></span>
+                            <button>Receptor Status</button>
+                        </div>
                     </md-item-content>
                 </md-item>
                 <md-item>
@@ -220,46 +229,47 @@
 
     <div layout="column" flex>
         <md-toolbar ng-if="loggedIn" ng-show="vm.showNavbar" ng-class="{'slide-in-vertically-navbar': loggedIn}" class="md-whiteframe-z1" md-theme-watch="true"
-            ng-mouseenter="showJulianDate = true" ng-mouseleave="showJulianDate = false">
+                    ng-mouseenter="showJulianDate = true" ng-mouseleave="showJulianDate = false">
             <div class="md-toolbar-tools" layout="row" style="padding: 0;  max-height: 56px;">
 
                 <md-button aria-label="Left Navbar" class="button-toolbar-flat-icon"
-                        style="margin-left: 0px; padding: 0px;"
-                        ng-click="vm.toggleLeftSidenav()">
+                           style="margin-left: 0px; padding: 0px;"
+                           ng-click="vm.toggleLeftSidenav()">
                     <span class="fa fa-navicon"></span>
                 </md-button>
 
                 <span style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentStateUpperCase()}}</span>
 
                 <!--<div class="btn-group"-->
-                     <!--ng-class="{open: vm.operatorControlHover || vm.operatorControlMenuHover}" layout="row">-->
+                <!--ng-class="{open: vm.operatorControlHover || vm.operatorControlMenuHover}" layout="row">-->
 
-                    <!---->
+                <!---->
 
-                    <!--<md-button style="height: 40px;" md-theme="{{themePrimaryButtons}}" md-theme-watch="true" class=""-->
-                               <!--aria-label="Operator Control"-->
-                               <!--ng-mouseenter="vm.operatorControlHover = true"-->
-                               <!--ng-mouseleave="vm.operatorControlHover = false"-->
-                               <!--ng-click="vm.operatorControlHover = false; vm.operatorControlMenuHover = false; vm.stateGo('operatorControl')">-->
-                        <!--Operator Control-->
-                    <!--</md-button>-->
+                <!--<md-button style="height: 40px;" md-theme="{{themePrimaryButtons}}" md-theme-watch="true" class=""-->
+                <!--aria-label="Operator Control"-->
+                <!--ng-mouseenter="vm.operatorControlHover = true"-->
+                <!--ng-mouseleave="vm.operatorControlHover = false"-->
+                <!--ng-click="vm.operatorControlHover = false; vm.operatorControlMenuHover = false; vm.stateGo('operatorControl')">-->
+                <!--Operator Control-->
+                <!--</md-button>-->
 
-                    <!--<md-content flex style="margin: -7px -1px 0;" class="dropdown-menu"-->
-                                <!--ng-mouseenter="vm.operatorControlMenuHover = true"-->
-                                <!--ng-mouseleave="vm.operatorControlMenuHover = false"-->
-                                <!--role="menu">-->
-                        <!--<div style="color: rgba(0,0,0,0.73)" layout="column">-->
-                            <!--<md-button ng-click="vm.inhibitAll()" aria-label="Inhibit All">Inhibit All</md-button>-->
-                            <!--<md-button ng-click="vm.stowAll()" aria-label="Stow All">Stow All</md-button>-->
-                            <!--<md-button ng-click="vm.stopAll()" aria-label="Stop All">Stop All</md-button>-->
-                            <!--<md-button ng-click="vm.resumeOperations()" aria-label="Resume Operations">Resume Operations</md-button>-->
-                            <!--<md-button disabled ng-click="vm.shutdownComputing()" aria-label="Shutdown Computing">Shutdown Computing</md-button>-->
-                        <!--</div>-->
-                    <!--</md-content>-->
+                <!--<md-content flex style="margin: -7px -1px 0;" class="dropdown-menu"-->
+                <!--ng-mouseenter="vm.operatorControlMenuHover = true"-->
+                <!--ng-mouseleave="vm.operatorControlMenuHover = false"-->
+                <!--role="menu">-->
+                <!--<div style="color: rgba(0,0,0,0.73)" layout="column">-->
+                <!--<md-button ng-click="vm.inhibitAll()" aria-label="Inhibit All">Inhibit All</md-button>-->
+                <!--<md-button ng-click="vm.stowAll()" aria-label="Stow All">Stow All</md-button>-->
+                <!--<md-button ng-click="vm.stopAll()" aria-label="Stop All">Stop All</md-button>-->
+                <!--<md-button ng-click="vm.resumeOperations()" aria-label="Resume Operations">Resume Operations</md-button>-->
+                <!--<md-button disabled ng-click="vm.shutdownComputing()" aria-label="Shutdown Computing">Shutdown Computing</md-button>-->
+                <!--</div>-->
+                <!--</md-content>-->
 
                 <!--</div>-->
 
                 <span flex></span>
+
                 <div ng-if="vm.julianDay" ng-show="showJulianDate">
                     <span style="font-size: 32px;">{{vm.julianDay}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> JD</span>
                     <md-tooltip>Julian Day</md-tooltip>
@@ -274,20 +284,20 @@
                 </div>
 
                 <md-button aria-label="Home" class="button-toolbar-flat-icon" style="margin: 2px;"
-                        ng-click="vm.stateGo('home')"><span class="fa fa-home"></span>
+                           ng-click="vm.stateGo('home')"><span class="fa fa-home"></span>
                 </md-button>
 
                 <div class="alarms-warning-container" style="margin: 2px;">
                     <md-button aria-label="Alarms" class="button-toolbar-flat-icon"
-                            ng-click="vm.stateGo('alarms')">
+                               ng-click="vm.stateGo('alarms')">
                         <span class="fa fa-warning"></span>
                     </md-button>
-                    <span ng-if="newAlarmWarnCount > 0"
-                    class="badge alarm-badge alarm-badge-warn">{{newAlarmWarnCount}}</span>
-                    <span ng-if="newAlarmErrorCount > 0"
-                    class="badge alarm-badge alarm-badge-error">{{newAlarmErrorCount}}</span>
-                    <span ng-if="newAlarmCritCount > 0"
-                    class="badge alarm-badge alarm-badge-crit">{{newAlarmCritCount}}</span>
+                    <span title="Warning Alarms"
+                          class="badge alarm-badge alarm-badge-warn">{{(alarmsData | filter:{priority:'new'} | filter:{severity:'warn'}).length}}</span>
+                    <span title="Error Alarms"
+                        class="badge alarm-badge alarm-badge-error">{{(alarmsData | filter:{priority:'new'} | filter:{severity:'error'}).length}}</span>
+                    <span title="Critical Alarms"
+                        class="badge alarm-badge alarm-badge-crit">{{(alarmsData | filter:{priority:'new'} | filter:{severity:'critical'}).length}}</span></span>
                 </div>
 
                 <md-button aria-label="Right Navbar" class="button-toolbar-flat-icon" ng-click="vm.toggleRightSidenav()" style="margin: 2px;">

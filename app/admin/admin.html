@@ -35,10 +35,9 @@
                 <span flex ng-click="vm.setOrderBy('id')" style="cursor: pointer;"><span>katGUI Users<md-tooltip>Sort by database ID</md-tooltip></span></span>
                 <md-checkbox class="fade-in" aria-label="Show Deactivated Users" ng-show="showUserTools" style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">Show Deactivated Users
                 </md-checkbox>
-                <md-input-container ng-show="showUserTools" md-theme="default" style="font-size: 12px; margin-top: -12px;" class="fade-in" focus flex>
-                    <label>Search Users...</label>
-                    <input ng-model-options="{ debounce: 300 }" ng-model="q">
-                </md-input-container>
+
+                <input class="fade-in search-input-box" style="min-width: 250px;" ng-show="showUserTools || q" type="search"
+                       ng-model-options="{ debounce: 300 }" ng-model="q" placeholder="Search Users..."/>
                 <md-button aria-label="Create A User" style="margin-right: 8px;" ng-click="vm.createUser()" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}">
                     <span class="fa fa-plus" style="margin-top: 2px;"></span>
                     <md-tooltip>Create A User</md-tooltip>
@@ -70,18 +69,18 @@
                  layout-align="start center"
                  style="background: white;"
                  ng-if="user.activated || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.activated, 'activated-user': user.activated }">
-                <div flex class="user-cell" style="max-width: 265px; min-width: 265px;" layout="row">
+                <div flex class="user-cell" style="max-width: 265px; min-width: 265px;" layout="row" title="Name">
                     <input flex type="text" placeholder="Name" md-theme="{{themeSecondary}}" ng-attr-id="{{ 'user-name-input-' + user.name }}" label="Name" ng-if="user.editing" ng-model="user.name"/>
-                    <span class="cell-span" ng-if="!user.editing">{{user.name}}<md-tooltip>Name</md-tooltip></span>
+                    <span class="cell-span" ng-if="!user.editing">{{user.name}}</span>
                 </div>
                 <div flex class="user-cell" style="max-width: 265px; min-width: 265px;" layout="row">
-                    <input flex type="text" placeholder="Name" md-theme="{{themeSecondary}}" label="Email" ng-if="user.editing" ng-model="user.email"/>
-                    <span class="cell-span" ng-if="!user.editing">{{user.email}}<md-tooltip>Email</md-tooltip></span>
+                    <input flex type="text" placeholder="Name" md-theme="{{themeSecondary}}" label="Email" ng-if="user.editing" ng-model="user.email" title="Email"/>
+                    <span class="cell-span" ng-if="!user.editing">{{user.email}}</span>
                 </div>
-                <div flex class="user-cell" style="min-width: 365px;" layout-align="start center" layout="row">
+                <div flex class="user-cell" style="min-width: 365px;" layout-align="start center" layout="row" title="User Roles">
                     <dropdown-multiselect ng-if="user.editing" options="vm.userRoles" model="user"></dropdown-multiselect>
-                    <span class="cell-span" style="margin-left: 14px;" ng-if="!user.editing && user.roles.length > 0" ng-repeat="role in user.roles | orderBy:role">{{role}},<md-tooltip>User's Roles</md-tooltip></span>
-                    <span class="cell-span" style="margin-left: 14px;" ng-if="!user.editing && user.roles.length === 0">No Roles Assigned<md-tooltip>User's Roles</md-tooltip></span>
+                    <span class="cell-span" style="margin-left: 14px;" ng-if="!user.editing && user.roles.length > 0" ng-repeat="role in user.roles | orderBy:role">{{role}},</span>
+                    <span class="cell-span" style="margin-left: 14px;" ng-if="!user.editing && user.roles.length === 0">No Roles Assigned</span>
                 </div>
 
                 <span flex></span>

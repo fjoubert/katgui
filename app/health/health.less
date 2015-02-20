@@ -1,5 +1,169 @@
 .health-map-style-select {
-  width: 100px;
-  margin-top: -13px;
+    width: 100px;
+    //  margin-top: -13px;
 }
 
+.treemap-container {
+//    margin: 3px;
+}
+
+.unknown-child {
+    background-color: #9E9E9E;
+    fill: #9E9E9E;
+    rect {
+        fill: #9E9E9E;
+    }
+    text {
+        fill: black;
+        font-weight: bold;
+    }
+}
+
+.unknown-child-text {
+    fill: black;
+    font-weight: bold;
+}
+
+.nominal-child {
+    background-color: #4CAF50;
+    fill: #4CAF50;
+    rect {
+        fill: #4CAF50;
+    }
+    text {
+        fill: white;
+        font-weight: bold;
+    }
+}
+
+.nominal-child-text {
+    fill: white;
+    font-weight: bold;
+}
+
+.warn-child {
+    background-color: #FFC107;
+    fill: #FFC107;
+    rect {
+        fill: #FFC107;
+    }
+
+    text {
+        fill: black;
+        font-weight: bold;
+    }
+}
+
+.warn-child-text {
+    fill: black;
+    font-weight: bold;
+}
+
+.error-child {
+    background-color: #F44336;
+    fill: #F44336;
+    rect {
+        fill: #F44336;
+    }
+
+    text {
+        fill: white;
+        font-weight: bold;
+    }
+}
+
+.error-child-text {
+    fill: white;
+    font-weight: bold;
+}
+
+.failure-child {
+    background-color: #3F51B5;
+    fill: #3F51B5;
+    rect {
+        fill: #3F51B5;
+    }
+
+    text {
+        fill: white;
+        font-weight: bold;
+    }
+}
+
+.failure-child-text {
+    fill: white;
+    font-weight: bold;
+}
+
+.unreachable-child {
+    background-color: #EC407A;
+    fill: #EC407A;
+    rect {
+        fill: #EC407A;
+    }
+
+    text {
+        fill: black;
+        font-weight: bold;
+    }
+}
+
+.unreachable-child-text {
+    fill: black;
+    font-weight: bold;
+}
+
+.inactive-child {
+    background-color: #795548;
+    fill: #795548;
+    rect {
+        fill: #795548;
+    }
+
+    text {
+        fill: white;
+        font-weight: bold;
+    }
+}
+
+.inactive-child-text {
+    fill: white;
+    font-weight: bold;
+}
+
+.legend-popup {
+    border-radius: 1px;
+    width: 150px;
+    height: 210px;
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    background: white;
+    color: black;
+    padding: 16px;
+    span {
+        margin-top: 4px;
+    }
+}
+
+.color-patch {
+    min-width: 20px;
+    min-height: 20px;
+    max-width: 20px;
+    max-height: 20px;
+    margin-right: 8px;
+    margin-top: 4px;
+}
+
+.pack-text, .partition-text {
+    font-size: 12px;
+}
+
+.parent-text {
+    font-weight: bold;
+    font-size: 22px;
+}
+
+.health-chart {
+    margin: 6px;
+}

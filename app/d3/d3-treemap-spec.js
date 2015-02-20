@@ -17,14 +17,14 @@ describe('Directive: d3-treemap', function () {
 //            return deferred.promise;
 //        });
     }));
-
-    it('should create a d3 line chart', function () {
-
-        var element = compile('<d3-treemap></d3-treemap>')(scope);
-        expect(element[0]).toBeDefined();
-        scope.$digest();
-
-    });
+    //
+    //it('should create a d3 line chart', function () {
+    //
+    //    var element = compile('<d3-treemap></d3-treemap>')(scope);
+    //    expect(element[0]).toBeDefined();
+    //    scope.$digest();
+    //
+    //});
 
     it('should ...', function () {
 

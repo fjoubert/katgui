@@ -24,7 +24,7 @@
         "font-awesome": "~4.2",
         "jquery-ui": "~1.10.3",
         "d3": "~3",
-        "angular-material": "~0.7"
+        "angular-material": "~0.8"
     },
     "devDependencies": {
         "sockjs": "~0.3.4",

@@ -1,64 +1,60 @@
-.health-chart {
-
-  background: transparent;
-}
-
 text {
-  pointer-events: none;
+    pointer-events: none;
 }
 
 .grandparent text {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .text-parent-node {
-  font-size: 18px;
+    font-size: 12px;
 }
 
 rect {
-  fill: none;
-  stroke: #ccc;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1px;
 }
 
 rect.parent,
 .grandparent rect {
-  stroke-width: 2px;
+    stroke-width: 2px;
 }
 
 .grandparent rect {
-  fill: #5677fc;
+    fill: #388E3C;
 }
 
 .grandparent:hover rect {
-  fill: #3b50ce;
+    fill: #388E3C;
 }
 
 .no-children rect.parent {
-  fill: #259b24;
-  fill-opacity: .75;
+    //    fill: #388E3C;
+    //    fill-opacity: .75;
 }
 
 .children rect.parent,
 .grandparent rect {
-  cursor: pointer;
+    cursor: pointer;
 }
 
-.children rect.parent {
-  fill: #259b24;
-  fill-opacity: .9;
-}
+//.children rect.parent {
+//    fill: #388E3C;
+//    fill-opacity: .9;
+//}
 
-.children:hover rect.child {
-  fill: #259b24;
-}
+//.children:hover rect.child {
+//    fill: #388E3C;
+//}
 
 .treemap-tooltip {
-  position: absolute;
-  border:1px solid;
-  margin:10px;
-  padding: 6px;
-  opacity: 0.9;
-  z-index: 1000;
+    position: absolute;
+    border: 1px solid;
+    margin: 10px;
+    padding: 6px;
+    opacity: 0.9;
+    z-index: 1000;
 }
 
 //svg {
@@ -66,45 +62,49 @@ rect.parent,
 //}
 
 text.parent {
-  fill: black;
+//    fill: black;
+    font-weight: bold;
+    font-size: 22px;
 }
 
 circle {
-  fill: #259b24;
-//  stroke: #eee;
-  pointer-events: all;
+    //    fill: #388E3C;
+    stroke: #fff;
+    pointer-events: all;
 }
 
 circle.parent {
-  fill: #259b24;
-  fill-opacity: .5;
-  stroke: transparent;
+//    fill: #388E3C;
+    //    fill: #388E3C;
+    fill-opacity: .3;
+    //    stroke: transparent;
 }
 
 circle.parent:hover {
-  stroke: #000;
-  stroke-width: .5px;
+    stroke: #000;
+    stroke-width: .5px;
 }
 
 circle.child {
-  pointer-events: none;
+    pointer-events: none;
 }
 
 rect.part {
-  stroke: #eee;
-  fill: #aaa;
-  fill-opacity: .8;
+    //      stroke: #eee;
+    //      fill: #aaa;
+    fill-opacity: .8;
 }
 
-rect.part-parent {
-  cursor: pointer;
-  fill: #259b24;
-  opacity: .9;
+.part-parent {
+    cursor: pointer;
+    fill: #388E3C;
+    opacity: .9;
+
 }
 
 path {
-  stroke: #000;
-  stroke-width: 1.5;
-  cursor: pointer;
-  opacity: 0.9;
+    stroke: #fff;
+    stroke-width: 1.5;
+    cursor: pointer;
+    opacity: 0.9;
 }

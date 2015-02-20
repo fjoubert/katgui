@@ -187,47 +187,47 @@ describe('OperatorControlCtrl', function () {
     //    });
     //}));
 
-    describe('Receptor Controls', function () {
-
-        it('should inhibit all receptors', inject(function () {
-
-            ctrl.inhibitAll();
-
-            ctrl.receptorsData.forEach(function (receptor) {
-                //expect(receptor.state).toBe('');
-                expect(receptor.inhibited).toBeTruthy();
-            });
-        }));
-
-        it('should issue stow all', inject(function () {
-            ctrl.stowAll();
-
-            ctrl.receptorsData.forEach(function (receptor) {
-                expect(receptor.state).toBe('STOW');
-                expect(receptor.inhibited).toBeFalsy();
-            });
-        }));
-
-        it('should issue stop all', inject(function () {
-            ctrl.stopAll();
-
-            ctrl.receptorsData.forEach(function (receptor) {
-                expect(receptor.state).toBe('STOW');
-                expect(receptor.inhibited).toBeTruthy();
-            });
-        }));
-
-        it('should issue resume operations', inject(function () {
-            ctrl.resumeOperations();
-
-            ctrl.receptorsData.forEach(function (receptor) {
-                expect(receptor.state).toBe('STOP');
-                expect(receptor.inhibited).toBeFalsy();
-            });
-        }));
-
-        //it('should issue shutdown computing', inject(function () {
-        //
-        //}));
-    });
+    //describe('Receptor Controls', function () {
+    //
+    //    it('should inhibit all receptors', inject(function () {
+    //
+    //        ctrl.inhibitAll();
+    //
+    //        ctrl.receptorsData.forEach(function (receptor) {
+    //            //expect(receptor.state).toBe('');
+    //            expect(receptor.inhibited).toBeTruthy();
+    //        });
+    //    }));
+    //
+    //    it('should issue stow all', inject(function () {
+    //        ctrl.stowAll();
+    //
+    //        ctrl.receptorsData.forEach(function (receptor) {
+    //            expect(receptor.state).toBe('STOW');
+    //            expect(receptor.inhibited).toBeFalsy();
+    //        });
+    //    }));
+    //
+    //    it('should issue stop all', inject(function () {
+    //        ctrl.stopAll();
+    //
+    //        ctrl.receptorsData.forEach(function (receptor) {
+    //            expect(receptor.state).toBe('STOW');
+    //            expect(receptor.inhibited).toBeTruthy();
+    //        });
+    //    }));
+    //
+    //    it('should issue resume operations', inject(function () {
+    //        ctrl.resumeOperations();
+    //
+    //        ctrl.receptorsData.forEach(function (receptor) {
+    //            expect(receptor.state).toBe('STOP');
+    //            expect(receptor.inhibited).toBeFalsy();
+    //        });
+    //    }));
+    //
+    //    //it('should issue shutdown computing', inject(function () {
+    //    //
+    //    //}));
+    //});
 });
