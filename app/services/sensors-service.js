@@ -227,6 +227,24 @@
             }
         };
 
+        api.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard = function (
+            resource, sensorNames, guid, strategyType, strategyIntervalMin, strategyIntervalMax) {
+
+            api.sendSensorsCommand('set_sensor_strategy',
+                [
+                    guid,
+                    resource,
+                    sensorNames,
+                    strategyType,
+                    strategyIntervalMin,
+                    strategyIntervalMax
+                ]);
+
+            for (var i in sensorNames) {
+                api.subscribe(resource + '.*' + sensorNames[i] + '*', guid);
+            }
+        };
+
         api.connectLiveFeed = function (sensor, guid) {
             var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
             sensorName = sensorName.replace(/\./g, '_');

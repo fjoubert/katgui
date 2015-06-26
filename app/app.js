@@ -477,6 +477,14 @@
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
+        $stateProvider.state('process-control', {
+            url: '/process-control',
+            templateUrl: 'app/process-control/process-control.html',
+            title: 'Process Control',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
 
         var schedulerHome = {
             name: 'scheduler',

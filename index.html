@@ -114,6 +114,7 @@
 <script src="app/scheduler/subarray-resources/subarray-resources.js"></script>
 <script src="app/scheduler/observations/observations-detail.js"></script>
 <script src="app/scheduler/observations/observations-overview.js"></script>
+<script src="app/process-control/process-control.js"></script>
 <!-- Add New Component JS Above -->
 
 <!--dont use md-whiteframe class because it leaves black artifacts on sidenav-->
@@ -161,10 +162,18 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content style="border-bottom: 1px solid #e5e5e5; padding-bottom: 8px;" ng-click="vm.sideNavStateGo('operator-control')">
+                    <md-item-content style="padding-bottom: 8px;" ng-click="vm.sideNavStateGo('operator-control')">
                         <div class="menu-item" layout="row" layout-align="start center">
                             <span class="fa fa-cogs"></span>
                             <button>Operator Control</button>
+                        </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content style="padding-bottom: 8px;" ng-click="vm.sideNavStateGo('process-control')">
+                        <div style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center">
+                            <span class="fa fa-wrench"></span>
+                            <button>Process Control</button>
                         </div>
                     </md-item-content>
                 </md-item>

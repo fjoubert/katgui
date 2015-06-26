@@ -1,0 +1,58 @@
+<div flex layout="column" ng-controller="ProcessControlCtrl as vm" style="margin-left: 16px; margin-right: 16px; margin-bottom: 16px; min-width: 1065px">
+    <div class="cam-build-info" layout-align="center center" layout="column">
+        <div flex style="padding: 16px;" class="md-whiteframe-z5" layout="column">
+            <span flex style="text-align: center; font-size: 16px; cursor: pointer;" ng-click="vm.showDetailedCamBuildInfo = !vm.showDetailedCamBuildInfo"
+                  ng-init="vm.showDetailedCamBuildInfo = false">
+                Current Build: <b>{{::vm.systemConfig.version.description}}</b>
+            </span>
+            <div ng-show="vm.showDetailedCamBuildInfo" layout="column" class="grow-height-animation"
+                style="margin-top: 8px;">
+                <div layout="row" ng-repeat="(key, value) in vm.systemConfig.version">
+                    <span style="width: 140px;">{{::key}}:</span>
+                    <span style="margin-left: 8px;">{{::value}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <md-toolbar class="md-whiteframe-z1 md-toolbar-tools md-toolbar-tools-medium" layout="row" layout-align="start center">
+        <span>Processes Control, Build and Version Information</span>
+    </md-toolbar>
+
+    <div class="md-whiteframe-z1" md-theme="{{themePrimaryButtons}}">
+        <div ng-repeat="key in objectKeys(vm.resourcesNames) | orderBy:key track by key"
+            class="process-control-container">
+            <div flex ng-click="vm.resourcesNames[key].showBuildState = !vm.resourcesNames[key].showBuildState" role="heading"
+                 ng-init="vm.resourcesNames[key].showBuildState = false" class="process-control-bg-transition md-whiteframe-z1"
+                style="padding: 6px;" layout="row" layout-align="start center" ng-class="{'bg-light-grey-0-3': vm.resourcesNames[key].showBuildState}">
+                <span ng-show="!vm.resourcesNames[key].connected" class="red-color" style="width: 160px; margin: 0;"><b>{{::key | uppercase}}</b></span>
+                <span ng-show="vm.resourcesNames[key].connected" class="green-color" style="width: 160px; margin: 0;"><b>{{::key | uppercase}}</b></span>
+                <span>{{::vm.resourcesNames[key].address[0]}}</span>
+                <span style="width: 38px; margin: 0">:{{::vm.resourcesNames[key].address[1]}}</span>
+                <span style="width: 180px;"><i>{{::vm.resourcesNames[key].sensors.api_version.value}}</i></span>
+                <span flex><i>{{::vm.resourcesNames[key].sensors.build_state.value}}</i></span>
+                <div layout="row" style="position: absolute; right: 0; top: 0">
+                    <md-button ng-show="!vm.resourcesNames[key].connected" ng-click="vm.processCommand(key, 'start'); $event.stopPropagation()" title="Start Process">
+                        <i class="fa fa-play"></i>
+                    </md-button>
+                    <md-button ng-show="vm.resourcesNames[key].connected" ng-click="vm.processCommand(key, 'restart_process'); $event.stopPropagation()" title="Restart Process">
+                        <i class="fa fa-refresh"></i>
+                    </md-button>
+                    <md-button ng-show="vm.resourcesNames[key].connected" ng-click="vm.processCommand(key, 'kill'); $event.stopPropagation()" title="Kill Process">
+                        <i class="fa fa-remove"></i>
+                    </md-button>
+                    <md-button ng-show="vm.resourcesNames[key].connected" ng-click="vm.processCommand(key, 'stop'); $event.stopPropagation()" title="Stop Process">
+                        <i class="fa fa-stop"></i>
+                    </md-button>
+                </div>
+
+            </div>
+            <div ng-if="vm.resourcesNames[key].showBuildState" class="grow-height-animation" style="cursor: auto;">
+                <div ng-repeat="(key, sensor) in vm.resourcesNames[key].sensors | orderBy:'name' track by key"
+                    style="margin: 4px;">
+                    <div style="text-align: end; width: 230px; display: inline-block"><span>{{sensor.name}}:</span></div>
+                    <div style="display: inline-block; margin-left: 4px;"><span><b>{{sensor.value}}</b></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

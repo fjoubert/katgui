@@ -10,6 +10,7 @@
         api.receptorHealthTree = {};
         api.receptorList = [];
         api.KATObsPortalURL = null;
+        api.systemConfig = {};
 
         api.loadKATObsPortalURL = function () {
             $http(createRequest('get', urlBase + '/system-config/sections/katportal/katobsportal'))
@@ -19,6 +20,20 @@
                 .error(function (message) {
                     $log.error(message);
                 });
+        };
+
+        api.getSystemConfig = function () {
+            var deferred = $q.defer();
+            $http(createRequest('get', urlBase + '/system-config'))
+                .success(function (result) {
+                    api.systemConfig = result;
+                    deferred.resolve(api.systemConfig);
+                })
+                .error(function (message) {
+                    $log.error(message);
+                    deferred.reject(message);
+                });
+            return deferred.promise;
         };
 
         api.getStatusTreeForReceptor = function () {
