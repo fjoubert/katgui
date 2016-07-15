@@ -52,7 +52,7 @@
                 vm.products = [];
                 var productKeys = Object.keys(productConfig);
                 productKeys.forEach(function (product) {
-                    vm.products.push({name: product, sp_product: productConfig[product].sp_product, cbf_product: productConfig[product].cbf_product})
+                    vm.products.push(product)
                 });
             });
 
