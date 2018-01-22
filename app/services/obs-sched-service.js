@@ -589,7 +589,7 @@
                         api.programBlocks[pbIndex].schedule_blocks.push(sb);
                     }
                 } else {
-                    $log.warning('Trying to update program blocks with sb.pb_id: ' + sb.pb_id +
+                    $log.warn('Trying to update program blocks with sb.pb_id: ' + sb.pb_id +
                         ', but could not find any program blocks with that id!');
                 }
             } else if (!sb.pb_id) {

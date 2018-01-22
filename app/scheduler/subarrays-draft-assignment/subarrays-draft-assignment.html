@@ -158,7 +158,7 @@
             </div>
         </md-toolbar>
         <div flex>
-            <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null, state:'APPROVED'} | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:id_code:true"
+            <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null, state:'APPROVED'} | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:id_code:true track by item.id"
                 title="{{item.id_code}} - {{item.description}} - {{item.type}} - {{item.desired_start_time}}"
                 ng-class="{'selected-resource-item': item.selected}" class="schedule-draft-item" layout="row"
                 layout-align="start center" ng-mousedown="vm.dragSelect = true; vm.dragSelectUnselect = item.selected; vm.toggleSBSelect(item)"

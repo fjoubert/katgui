@@ -35,7 +35,7 @@
                 </div>
             </md-toolbar>
             <div ng-click="showDatePicker = false" flex id="scheduleDraftDataRepeat">
-                <ng-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy:vm.draftsOrderBy.reverse) track by item.id"
+                <div ng-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy:vm.draftsOrderBy.reverse) track by item.id"
                     layout="row" ng-click="vm.setSelectedScheduleDraft(item)" ng-class="{'selected-schedule-row md-whiteframe-z3': item === vm.selectedScheduleDraft}"
                     class="schedule-draft-item" layout-align="start center" style="padding: 0 4px">
                     <md-progress-linear md-theme="grey" ng-if="item.verification_state === 'VERIFYING'" class="md-primary progress-bar-fill"
