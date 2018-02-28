@@ -19,6 +19,7 @@
         api.aggregateSensorDetail = null;
         api.resourceGroups = ['Components', 'Proxies'];
         api.sensorGroups = {};
+        api.vdsConstants = {};
         api.loadingSystemConfigPromises = [];
 
         api.loadSensorGroups = function () {
@@ -27,6 +28,19 @@
                 .then(function (result) {
                     api.sensorGroups = result.data;
                     deferred.resolve(api.sensorGroups);
+                }, function (message) {
+                    $log.error(message);
+                    deferred.reject();
+                });
+            return deferred.promise;
+        };
+
+        api.loadVDSConst = function () {
+            var deferred = $q.defer();
+            $http(createRequest('get', urlBase() + '/vds-config'))
+                .then(function (result) {
+                    api.vdsConstants = result.data;
+                    deferred.resolve(api.vdsConstants);
                 }, function (message) {
                     $log.error(message);
                     deferred.reject();

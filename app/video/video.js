@@ -14,6 +14,7 @@
         vm.imageSource = null;
         vm.sensorValues = {};
         vm.stepTimeValue = 1;
+        vm.vdsConstants = {};
         vm.sensorsRegex = '^anc_vds';
 
         ConfigService.getSystemConfig()
@@ -34,7 +35,12 @@
                         url: systemConfig.vds[imageSource]
                     };
                 });
+
+            ConfigService.loadVDSConst().then(function (result) {
+                vm.vdsConstants = result;
             });
+        });
+
 
         vm.toggleFloodLights = function() {
             vm.floodlightsOn(
