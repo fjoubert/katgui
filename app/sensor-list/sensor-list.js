@@ -305,10 +305,8 @@
 
         vm.unsubscribeResource = function (resourceName) {
             if (resourceName) {
-                vm.subscribedSensors.forEach(function (sensor) {
-                    MonitorService.unsubscribe(['sensor', '*', resourceName, sensor.name].join('.'));
-                });
                 vm.subscribedSensors = [];
+                MonitorService.unsubscribeResource(resourceName);
             }
         };
 

@@ -85,6 +85,11 @@
             api.subscribe('sensor.normal.' + component + '.*');
         };
 
+        api.unsubscribeResource = function(component) {
+            // Sensor subjects are sensor.*.<component>.*
+            api.unsubscribe('sensor.normal.' + component + '.*');
+        };
+
         api.subscribe = function(sub) {
             var jsonRPC = {
                 'jsonrpc': '2.0',

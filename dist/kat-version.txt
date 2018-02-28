@@ -1,1 +1,1 @@
-1.0.1
+1.0.2.dev1641+user.ajoubert.fix.not.unsubscribing.sensor.list.6918ffb.dirty
