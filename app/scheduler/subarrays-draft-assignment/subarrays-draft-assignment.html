@@ -142,7 +142,8 @@
                 <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'" class="list-subheader-title"
                     style="height: 32px; width: 100%"></div>
             </md-toolbar>
-            <div layout="column" style="min-height: 350px; max-height: 350px; overflow: auto" ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
+            <div style="min-height: 350px; max-height: 350px; overflow: auto" ng-if="vm.subarray.mode !== 'auto'" layout="column" flex ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
+            <div style="min-height: 350px; max-height: 350px; overflow: auto" ng-if="vm.subarray.mode === 'auto'" layout="column" flex ng-include="'app/scheduler/templates/auto-schedule-list.html'"></div>
         </div>
     </div>
 

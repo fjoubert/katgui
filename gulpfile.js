@@ -172,13 +172,15 @@ gulp.task('webserver', function() {
 
 gulp.task('version:file', ['clean', 'js'], function () {
     fs.writeFileSync('dist/version.txt', '{"version": "' + pkg.version + '", "buildDate": "' + buildDate + '"}\n');
-    exec('kat-get-version.py', function (error, stdout, stderr) {
-        if (error) {
-            console.error('exec error: ' + error);
-            throw error;
-        }
-        fs.writeFileSync('dist/kat-version.txt', stdout);
-    });
+    fs.writeFileSync('dist/kat-version.txt', pkg.version);
+    // TODO one day get these values from kat-get-version.py when we tag release commits properly
+    // exec('kat-get-version.py', function (error, stdout, stderr) {
+    //     if (error) {
+    //         console.error('exec error: ' + error);
+    //         throw error;
+    //     }
+    //     fs.writeFileSync('dist/kat-version.txt', stdout.toString());
+    // });
 });
 
 gulp.task('build', ['clean', 'css:material', 'css:main', 'css:concat', 'clean:csstmp', 'js', 'indexHtml', 'fonts', 'images', 'sounds', 'version:file']);

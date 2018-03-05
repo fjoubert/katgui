@@ -316,9 +316,32 @@
             var deferred = $q.defer();
             $http(createRequest('get', urlBase() + '/pb/observation-schedule'))
                 .then(function(result) {
+                    var activeSBsProgress = {};
+                    // retain progress meter for active sb's
+                    api.observationSchedule.forEach(function (pb) {
+                        pb.schedule_blocks.forEach(function (sb) {
+                            if (sb.state === 'ACTIVE') {
+                                activeSBsProgress[sb.id_code] = sb.progress;
+                            }
+                        });
+                    });
                     api.observationSchedule.splice(0, api.observationSchedule.length);
                     var jsonResult = JSON.parse(result.data.result);
                     jsonResult.forEach(function(jsonItem) {
+                        if (jsonItem.schedule_blocks) {
+                            jsonItem.schedule_blocks.forEach(function (sb) {
+                                if (sb.queue_position && sb.queue_position.length > 0) {
+                                    // attempt parsing this field, but don't spaz if it doesn't parse
+                                    // it could mean that the auto scheduler has never ran on this sb
+                                    try {
+                                        sb.queue_position = JSON.parse(sb.queue_position);
+                                    } catch (error) {
+                                        $log.error(error);
+                                    }
+                                }
+                                sb.progress = activeSBsProgress[sb.id_code];
+                            });
+                        }
                         api.observationSchedule.push(jsonItem);
                     });
                     api.populateObservationPbExpectedDurations();
@@ -346,45 +369,6 @@
                     pb.expectedDuration = durationHours + ':' + durationMinutes + ':' + durationSeconds;
                 }
             });
-        };
-
-        api.getScheduledScheduleBlocks = function() {
-            var deferred = $q.defer();
-            $http(createRequest('get', urlBase() + '/sb/scheduled'))
-                .then(function(result) {
-                    var jsonResult = JSON.parse(result.data.result);
-                    var newScheduleDataIdCodes = [];
-                    for (var i in jsonResult) {
-                        var existingSbIndex = _.findIndex(api.scheduleData, {
-                            id_code: jsonResult[i].id_code
-                        });
-                        if (existingSbIndex > -1) {
-                            //Update existing schedule blocks
-                            api.scheduleData.splice(existingSbIndex, 1);
-                        }
-                        api.scheduleData.push(jsonResult[i]);
-                        newScheduleDataIdCodes.push(jsonResult[i].id_code);
-                    }
-                    //Remove old schedule blocks that has had a state change
-                    var existingSbIdCodes = api.scheduleData.map(function(sb) {
-                        return sb.id_code;
-                    });
-                    var sbIdCodesToRemove = _.difference(existingSbIdCodes, newScheduleDataIdCodes);
-                    sbIdCodesToRemove.forEach(function(sbIdCode) {
-                        var existingSbIndex = _.findIndex(api.scheduleData, function(sb) {
-                            return sb.id_code === sbIdCode;
-                        });
-                        if (existingSbIndex > -1) {
-                            api.scheduleData.splice(existingSbIndex, 1);
-                        }
-                    });
-
-                    deferred.resolve(api.scheduleData);
-                }, function(error) {
-                    $log.error(error);
-                    deferred.reject(error);
-                });
-            return deferred.promise;
         };
 
         api.throttleGetProgramBlocksObservationSchedule = _.throttle(api.getProgramBlocksObservationSchedule, 300);
@@ -572,15 +556,18 @@
                 });
                 if (pbIndex > -1) {
                     //SB could've moved from one pb to another
+                    var sbProgress = null;
                     api.programBlocks.forEach(function(pb, existingIndex) {
                         var sbIndex = _.findLastIndex(pb.schedule_blocks, {
                             id: sb.id
                         });
                         if (sbIndex > -1) {
+                            sbProgress = pb.schedule_blocks[sbIndex].progress;
                             api.programBlocks[existingIndex].schedule_blocks.splice(sbIndex, 1);
                         }
                     });
                     if (!sb.deleted) {
+                        sb.progress = sbProgress;
                         api.programBlocks[pbIndex].schedule_blocks.push(sb);
                     }
                 } else {
@@ -600,11 +587,19 @@
         };
 
         api.receivedSBMessage = function(sb, action, id_to_action) {
-            // TODO update observationSchedule
             var scheduleDataToAdd = [];
             var draftDataToAdd = [];
             var completedDataToAdd = [];
             var orderChangeCall = false;
+            if (sb.queue_position && sb.queue_position.length > 0) {
+                // attempt parsing this field, but don't spaz if it doesn't parse
+                // it could mean that the auto scheduler has never ran on this sb
+                try {
+                    sb.queue_position = JSON.parse(sb.queue_position);
+                } catch (error) {
+                    $log.error(error);
+                }
+            }
 
             if (action === 'delete') {
                 //only drafts can be deleted in the db

@@ -1,0 +1,8 @@
+<div flex md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z2" ng-class="{'maintenance-bg':subarray.maintenance}" style="overflow: auto">
+    <div ng-repeat="pb in vm.observationSchedule | filter:parent.vm.hasScheduleBlocks(pb) | filter:{sub_nr: subarray.id} track by $index">
+        <div ng-repeat="sb in pb.schedule_blocks | orderBy:'queue_position.position' track by $index" style="margin: 0 4px; z-index: 0; min-width: calc(100% - 8px)"
+            ng-class="{'selected-schedule-row md-whiteframe-z3': sb === vm.selectedSchedule}" class="schedule-draft-item"
+            layout="row" layout-align="start center" ng-click='vm.setSelectedSchedule(sb)' ng-include="'app/scheduler/templates/sb-single-scheduled-line-item.html'">
+        </div>
+    </div>
+</div>

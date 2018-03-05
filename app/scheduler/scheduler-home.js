@@ -29,7 +29,7 @@
         vm.users = [];
         vm.resourceBusyStates = ['deactivating', 'configuring', 'configured', 'activating'];
         vm.iAmCA = false;
-        vm.modeTypes = ['queue', 'manual'];
+        vm.modeTypes = ['queue', 'manual', 'auto'];
         vm.guiUrls = ObsSchedService.guiUrls;
         vm.subscribedSensors = [];
         vm.sensorsRegex = '';

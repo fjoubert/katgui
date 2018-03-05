@@ -45,7 +45,8 @@
                 <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'" class="list-subheader-title"
                     style="height: 32px; width: 100%; pointer-events: none"></div>
             </md-toolbar>
-            <div layout="column" flex ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
+            <div ng-if="vm.subarray.mode !== 'auto'" layout="column" flex ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
+            <div ng-if="vm.subarray.mode === 'auto'" layout="column" flex ng-include="'app/scheduler/templates/auto-schedule-list.html'"></div>
         </div>
 
         <div style="margin-top: 8px" layout="column">

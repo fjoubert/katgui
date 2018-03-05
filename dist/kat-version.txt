@@ -1,1 +1,1 @@
-v1.0.1.dev1646+user/ofaletse/get_vds_constants_from_from_portal.g4768893-dirty
+1.0.1
