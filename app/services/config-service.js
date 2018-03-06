@@ -98,6 +98,10 @@
         };
 
         api.getConfigHealthViews = function () {
+            return $http(createRequest('get', urlBase() + '/statustrees/config_views'));
+        };
+
+        api.getCustomHealthViews = function () {
             return $http(createRequest('get', urlBase() + '/statustrees/custom_views'));
         };
 

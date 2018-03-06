@@ -8,7 +8,7 @@
 
         var vm = this;
         vm.mapTypes = ['Pack', 'Partition', 'Icicle', 'Sunburst'];
-        vm.configHealhViews = {};
+        vm.configHealthViews = {};
         vm.configItemsSelect = [];
         vm.subscribedSensors = [];
         vm.selectedConfigView = $stateParams.configItem ? $stateParams.configItem : '';
@@ -57,13 +57,13 @@
 
         ConfigService.getConfigHealthViews().then(
             function(result) {
-                vm.configHealhViews = result.data;
-                Object.keys(vm.configHealhViews).forEach(function (viewKey) {
-                    vm.configHealhViews[viewKey].forEach(function (view) {
+                vm.configHealthViews = result.data;
+                Object.keys(vm.configHealthViews).forEach(function (viewKey) {
+                    vm.configHealthViews[viewKey].forEach(function (view) {
                         vm.populateSensorNames(viewKey, view);
                     });
                 });
-                $rootScope.configHealthViews = Object.keys(vm.configHealhViews);
+                $rootScope.configHealthViews = Object.keys(vm.configHealthViews);
                 vm.redrawCharts();
                 vm.initSensors();
             },

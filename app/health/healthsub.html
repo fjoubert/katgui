@@ -1,0 +1,31 @@
+<div flex layout="row" layout-align="center start" ng-controller="HealthCtrlSub as vm" style="min-width: 1100px; overflow: auto; margin-top: 4px;">
+    <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true"
+         ng-class="{'transparent-legend':transparentLegend && !showLegend}">
+        <md-button style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
+                   ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true" class="md-fab md-mini md-primary">
+            <md-icon class="fa" ng-if="!showLegend" md-font-icon="fa-eye"></md-icon>
+            <md-icon class="fa" ng-if="showLegend" md-font-icon="fa-eye-slash"></md-icon>
+        </md-button>
+        <div class="md-whiteframe-z3" layout="column" ng-show="showLegend" style="background: white; padding: 8px;">
+            <div layout="row" layout-align="start center"><div class="color-patch unknown-child" title="Grey"></div><span>Unknown</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch nominal-child" title="Green"></div><span>Nominal</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch warn-child" title="Amber"></div><span>Warn</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch error-child" title="Red"></div><span>Error</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch failure-child" title="Blue"></div><span>Failure</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch unreachable-child" title="Pink"></div><span>Unreachable</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch in-maintenance-child" title="Purple"></div><span>In Maintenance</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch inactive-child" title="Black"></div><span>CAM Sensor Error</span></div>
+        </div>
+    </div>
+    <div flex ng-repeat="tree in vm.StatusTrees['sub']" layout="column" style="max-height: 100%; min-height: 100%; padding: 2px">
+        <md-toolbar class="status-top-label md-toolbar-tools-medium md-whiteframe-z1">
+            <label>{{tree.name}}</label>
+        </md-toolbar>
+        <div flex ng-repeat="sub in tree.subs" ng-class="vm.getClassesOfSensor(sub)" layout="column" layout-align="center center"
+            style="margin: 1px 0" title="{{vm.getSensorTextFromSub(sub)}}">
+            <label ng-mouseup="vm.subMouseUp(sub, $event)" style="cursor: pointer">{{sub.name}}</label>
+        </div>
+    </div>
+
+    <div class="treemap-tooltip" style="visibility: hidden; background-color: #ffffff"></div>
+</div>

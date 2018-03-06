@@ -9,13 +9,18 @@
         var api = {};
         api.statusData = {};
         api.receptors = [];
-        api.topStatusTrees = [];
+        api.StatusTrees = {};
+        api.StatusTrees["top"] = {};
+        api.StatusTrees["sub"] = {};
+        api.StatusTrees["cbf"] = {};
+        api.topStatusTrees = api.StatusTrees["top"];
         api.itemsToUpdate = {};
         api.sensorValues = {};
         api.resourcesInMaintenance = '';
         api.controlledResources = [];
         api.receptorTreesSensors = {};
         api.configHealthSensors = {};
+        api.customHealthSensors = {};
         api.updateQueue = [];
 
         api.addToUpdateQueue = function(sensor) {
@@ -50,6 +55,26 @@
             for (var treeName in statusTrees) {
                 var tree = statusTrees[treeName];
                 api.topStatusTrees.push(tree);
+
+                tree.children = [];
+                tree.subs.forEach(function(sub) {
+                    var newSub = {
+                        prefix: sub.component + '_',
+                        component: sub.component,
+                        sensor: sub.sensor,
+                        name: sub.name
+                    };
+                    tree.children.push(newSub);
+                });
+            }
+        };
+
+        api.setStatusTrees = function(statusTrees, which) {
+            api.StatusTrees[which].splice(0, api.StatusTrees[which].length);
+
+            for (var treeName in statusTrees) {
+                var tree = statusTrees[treeName];
+                api.StatusTrees[which].push(tree);
 
                 tree.children = [];
                 tree.subs.forEach(function(sub) {

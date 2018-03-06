@@ -99,6 +99,7 @@
         };
 
         $rootScope.configHealthViews = [];
+        $rootScope.customHealthViews = [];
 
         SessionService.recoverLogin();
 
@@ -207,6 +208,17 @@
             if (!ConfigService.systemConfig) {
                 $rootScope.getSystemConfig();
             }
+
+            ConfigService.getCustomHealthViews().then(
+                function(result) {
+                    $rootScope.customHealthViews = [];
+                    _.each(result.data, function(value, key, obj) {
+                        $rootScope.customHealthViews.push(key);
+                    });
+                },
+                function(error) {
+                    $log.error(error);
+                });
 
             ConfigService.getConfigHealthViews().then(
                 function(result) {
@@ -483,15 +495,36 @@
         $stateProvider.state('health', {
             url: '/health',
             templateUrl: 'app/health/health.html',
-            title: 'Health & State'
+            title: 'TOP Health & State'
+        });
+        $stateProvider.state('healthsub', {
+            url: '/healthsub',
+            templateUrl: 'app/health/healthsub.html',
+            title: 'SUB Health & State'
+        });
+        $stateProvider.state('healthcbf', {
+            url: '/healthcbf',
+            templateUrl: 'app/health/healthcbf.html',
+            title: 'CBF Health & State'
         });
         $stateProvider.state('receptorHealth', {
             url: '/receptor-health',
             templateUrl: 'app/health/receptor-health/receptor-health.html',
             title: 'Receptor Health'
         });
-        $stateProvider.state('config-health', {
-            url: '/config-health/{configItem}',
+        $stateProvider.state('custom-health-view', {
+            url: '/custom-health-view/{configItem}',
+            templateUrl: 'app/health/custom-health-view/custom-health-view.html',
+            title: 'Custom Health',
+            params: {
+                configItem: {
+                    value: null,
+                    squash: true
+                }
+            },
+        });
+        $stateProvider.state('config-health-view', {
+            url: '/config-health-view/{configItem}',
             templateUrl: 'app/health/config-health-view/config-health-view.html',
             title: 'Config Health',
             params: {

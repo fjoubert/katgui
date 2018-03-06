@@ -8,10 +8,13 @@ After cloning the repo do:
 Navigate to the project folder
 >yarn install
 
+To isntall all packages in package.json
+>npm install
+
 To use gulp to host the project locally on port 8000 do:
 >gulp webserver
 
-(If needed install the gulp task runner globally using `sudo nmp install -g gulp`)
+(If needed install the gulp task runner globally using `sudo npm install -g gulp`)
 
 Note: that running the webserver task will open a browser window to `http://localhost:8000/localhostindex.html`.
 The `localhostindex.html` file is created from the `index.html` file by the webserver task. This is necessary
