@@ -98,6 +98,10 @@
         };
 
         api.getConfigHealthViews = function () {
+            return $http(createRequest('get', urlBase() + '/statustrees/config_views'));
+        };
+
+        api.getCustomHealthViews = function () {
             return $http(createRequest('get', urlBase() + '/statustrees/custom_views'));
         };
 
@@ -150,6 +154,14 @@
 
         api.getStatusTreesForTop = function () {
             return $http(createRequest('get', urlBase() + '/statustrees/top_view'));
+        };
+
+        api.getStatusTreesForSub = function () {
+            return $http(createRequest('get', urlBase() + '/statustrees/sub_view'));
+        };
+
+        api.getStatusTreesForCbf = function () {
+            return $http(createRequest('get', urlBase() + '/statustrees/cbf_view'));
         };
 
         api.getReceptorList = function () {

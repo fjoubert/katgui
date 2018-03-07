@@ -63,7 +63,7 @@
         </md-menu>
 
     </div>
-    <div ng-repeat="item in vm.configHealhViews[vm.selectedConfigView] track by $index" ng-switch="vm.mapType" style="display: inline-block">
+    <div ng-repeat="item in vm.configHealthViews[vm.selectedConfigView] track by $index" ng-switch="vm.mapType" style="display: inline-block">
         <receptor-health-pack-map class="treemap-container" size-storage-key="configHealthDisplaySize" receptor="item" ng-switch-when="Pack"></receptor-health-pack-map>
         <receptor-health-partition-map class="treemap-container" size-storage-key="configHealthDisplaySize" receptor="item" ng-switch-when="Partition"></receptor-health-partition-map>
         <receptor-health-icicle-map class="treemap-container" size-storage-key="configHealthDisplaySize" receptor="item" ng-switch-when="Icicle"></receptor-health-icicle-map>
