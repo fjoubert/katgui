@@ -9,13 +9,23 @@
         var api = {};
         api.statusData = {};
         api.receptors = [];
-        api.topStatusTrees = [];
+        api.correlators = [];
+        /*api.StatusTrees = {};
+        api.StatusTrees["top"] = {};
+        api.StatusTrees["sub"] = {};
+        api.StatusTrees["cbf"] = {};
+        api.topStatusTrees = api.StatusTrees["top"];*/
+        api.topStatusTrees = []; 
+        api.subStatusTrees = []; 
+        api.cbfStatusTrees = []; 
         api.itemsToUpdate = {};
         api.sensorValues = {};
         api.resourcesInMaintenance = '';
         api.controlledResources = [];
+        api.correlatorTreesSensors = {};
         api.receptorTreesSensors = {};
         api.configHealthSensors = {};
+        api.customHealthSensors = {};
         api.updateQueue = [];
 
         api.addToUpdateQueue = function(sensor) {
@@ -44,6 +54,28 @@
             });
         };
 
+        api.setCorrelatorsAndStatusTree = function(statusTree, correlators) {
+            api.correlators.splice(0, api.correlators.length);
+            correlators.forEach(function(correlator) {
+                api.correlators.push(correlator);
+            });
+
+            api.controlledResources.forEach(function(resource) {
+                var newStatusDataResource = {};
+                if (api.statusData[resource]) {
+                    newStatusDataResource = api.statusData[resource];
+                }
+                newStatusDataResource.name = resource;
+
+                newStatusDataResource.sensor = statusTree.sensor.replace('.', '_').replace('-', '_');
+                if (api.correlators.indexOf(resource) > -1) {
+                    newStatusDataResource.children = statusTree.children;
+                }
+
+                api.statusData[resource] = newStatusDataResource;
+            });
+        };
+
         api.setTopStatusTrees = function(statusTrees) {
             api.topStatusTrees.splice(0, api.topStatusTrees.length);
 
@@ -63,6 +95,48 @@
                 });
             }
         };
+
+        api.setSubStatusTrees = function(statusTrees) {
+            api.subStatusTrees.splice(0, api.subStatusTrees.length);
+
+            for (var treeName in statusTrees) {
+                var tree = statusTrees[treeName];
+                api.subStatusTrees.push(tree);
+
+                tree.children = [];
+                tree.subs.forEach(function(sub) {
+                    var newSub = {
+                        prefix: sub.component + '_',
+                        component: sub.component,
+                        sensor: sub.sensor,
+                        name: sub.name
+                    };
+                    tree.children.push(newSub);
+                });
+            }
+        };
+
+
+        api.setCbfStatusTrees = function(statusTrees) {
+            api.cbfStatusTrees.splice(0, api.cbfStatusTrees.length);
+
+            for (var treeName in statusTrees) {
+                var tree = statusTrees[treeName];
+                api.cbfStatusTrees.push(tree);
+
+                tree.children = [];
+                tree.subs.forEach(function(sub) {
+                    var newSub = {
+                        prefix: sub.component + '_',
+                        component: sub.component,
+                        sensor: sub.sensor,
+                        name: sub.name
+                    };
+                    tree.children.push(newSub);
+                });
+            }
+        };
+
 
         function applyValueToSensor(node, sensorName, value, rootName) {
             var prefix = node.prefix ? node.prefix : '';

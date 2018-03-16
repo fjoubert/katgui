@@ -81,6 +81,11 @@
 <script src="app/d3/receptor-health-partition-map.js"></script>
 <script src="app/d3/receptor-health-icicle-map.js"></script>
 <script src="app/d3/receptor-health-sunburst-map.js"></script>
+<script src="app/d3/correlator-health-items.js"></script>
+<script src="app/d3/correlator-health-pack-map.js"></script>
+<script src="app/d3/correlator-health-partition-map.js"></script>
+<script src="app/d3/correlator-health-icicle-map.js"></script>
+<script src="app/d3/correlator-health-sunburst-map.js"></script>
 <script src="app/d3/status-single-level-tree-map.js"></script>
 <script src="app/d3/timeline.js"></script>
 
@@ -93,10 +98,14 @@
 <script src="app/video/video.js"></script>
 <script src="app/operator-control/operator-control.js"></script>
 <script src="app/health/health.js"></script>
+<script src="app/health/healthsub.js"></script>
+<script src="app/health/healthcbf.js"></script>
+<script src="app/health/correlator-health/correlator-health.js"></script>
 <script src="app/health/receptor-health/receptor-health.js"></script>
 <script src="app/health/receptor-status/receptor-status.js"></script>
 <script src="app/health/receptor-pointing/receptor-pointing.js"></script>
 <script src="app/health/custom-health/custom-health.js"></script>
+<script src="app/health/custom-health-view/custom-health-view.js"></script>
 <script src="app/health/config-health-view/config-health-view.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
 <script src="app/sensor-list/sensor-list.js"></script>
@@ -137,40 +146,64 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
                         <md-button><span class="fa fa-warning"></span><span>Alarms</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
+                    <md-item-content class="menu-item" style="border-bottom: 1px solid #e5e5e5;" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('operator-control')">
+                        <div class="menu-item" layout="row" layout-align="start center">
+                            <md-button><span class="fa fa-cogs"></span><span>Operator Control</span></md-button>
+                        </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
                     <md-item-content style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;" layout="column">
-                        <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('health')">
+                        <div class="menu-item" layout="row" layout-align="start center">
+                            <md-button><span class="fa fa-heart"></span><span>Health Views</span></md-button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('health')">
                             <md-button><span class="fa fa-heart"></span><span>Top Health</span></md-button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorStatus')">
-                            <md-button><span class="fa fa-th"></span><span>Receptor Status</span></md-button>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('healthsub')">
+                            <md-button><span class="fa fa-heart"></span><span>Sub Health</span></md-button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorPointing')">
-                            <md-button><span class="fa fa-crosshairs"></span><span>Receptor Pointing</span></md-button>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('healthcbf')">
+                            <md-button><span class="fa fa-heart"></span><span>CBF Health</span></md-button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('correlatorHealth')">
+                            <md-button><span class="fa fa-th-large"></span><span>Correlator Health</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorHealth')">
                             <md-button><span class="fa fa-th-large"></span><span>Receptor Health</span></md-button>
                         </div>
+                        <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorStatus')">
+                            <md-button><span class="fa fa-th"></span><span>Receptor Status</span></md-button>
+                        </div>
+                        <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorPointing')">
+                            <md-button><span class="fa fa-crosshairs"></span><span>Receptor Pointing</span></md-button>
+                        </div>
+                        <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('device-status')">
+                            <md-button><span class="fa fa-th-list"></span><span>Device Status</span></md-button>
+                        </div>
+                </md-item>
+                <md-item>
+                    <md-item-content style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;" layout="column">
                         <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('customHealth')">
                             <md-button><span class="fa fa-heartbeat"></span><span>Custom Health</span></md-button>
+                        </div>
+                        <div ng-repeat="configItem in $root.customHealthViews | orderBy track by $index" class="menu-item menu-item-indented" layout="row" layout-align="start center">
+                            <md-button ng-click="vm.sideNavStateGo('customHealthView', {layout: configItem})"><span class="fa fa-file-code-o"></span> <span>{{configItem.toUpperCase()}}</span></md-button>
                         </div>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;" layout="column">
-                        <div ng-repeat="configItem in $root.configHealthViews track by $index" class="menu-item" layout="row" layout-align="start center">
-                            <md-button ng-click="vm.sideNavStateGo('config-health', {configItem: configItem})"><span class="fa fa-file-code-o"></span><span>{{configItem.toUpperCase()}} Health</span></md-button>
+                        <div class="menu-item" layout="row" layout-align="start center" >
+                            <md-button><span class="fa fa-heart"></span><span>Config Health</span></md-button>
                         </div>
-                    </md-item-content>
-                </md-item>
-                <md-item>
-                    <md-item-content style="padding-bottom: 8px" ng-click="vm.sideNavStateGo('operator-control')">
-                        <div class="menu-item" layout="row" layout-align="start center">
-                            <md-button><span class="fa fa-cogs"></span><span>Operator Control</span></md-button>
+                        <div ng-repeat="configItem in $root.configHealthViews | orderBy track by $index" class="menu-item menu-item-indented" layout="row" layout-align="start center">
+                            <md-button ng-click="vm.sideNavStateGo('config-health-view', {configItem: configItem})"><span class="fa fa-file-code-o"></span> <span>{{configItem.toUpperCase()}}</span></md-button>
                         </div>
                     </md-item-content>
                 </md-item>
@@ -228,11 +261,6 @@
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('sensor-groups')">
                         <md-button><span class="fa fa-list-alt"></span><span>Sensor Groups</span></md-button>
-                    </md-item-content>
-                </md-item>
-                <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('device-status')">
-                        <md-button><span class="fa fa-th-list"></span><span>Device Status</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>

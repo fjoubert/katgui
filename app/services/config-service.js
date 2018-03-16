@@ -13,6 +13,8 @@
         api.resources = {};
         api.receptorHealthTree = {};
         api.receptorList = [];
+        api.correlatorHealthTree = {};
+        api.correlatorList = [];
         api.KATObsPortalURL = null;
         api.systemConfig = null;
         api.productConfig = null;
@@ -20,6 +22,7 @@
         api.resourceGroups = ['Components', 'Proxies'];
         api.sensorGroups = {};
         api.loadingSystemConfigPromises = [];
+        api.CBFCustomViewFilter = {};
 
         api.loadSensorGroups = function () {
             var deferred = $q.defer();
@@ -75,6 +78,9 @@
                         if (api.systemConfig && api.systemConfig.system && api.systemConfig.system.subarray_nrs) {
                             api.systemConfig.subarrayNrs = api.systemConfig.system.subarray_nrs.split(',');
                         }
+                        if (api.systemConfig && api.systemConfig.system && api.systemConfig.system.dataproxy_nrs) {
+                            api.systemConfig.dataproxyNrs = api.systemConfig.system.dataproxy_nrs.split(',');
+                        }
                         api.loadingSystemConfig = false;
                         api.loadingSystemConfigPromises.forEach(function (deferred) {
                             deferred.resolve(api.systemConfig);
@@ -98,6 +104,10 @@
         };
 
         api.getConfigHealthViews = function () {
+            return $http(createRequest('get', urlBase() + '/statustrees/config_views'));
+        };
+
+        api.getCustomHealthViews = function () {
             return $http(createRequest('get', urlBase() + '/statustrees/custom_views'));
         };
 
@@ -148,8 +158,20 @@
             return $http(createRequest('get', urlBase() + '/statustrees/receptors_view/receptors'));
         };
 
+        api.getStatusTreeForCorrelator = function () {
+            return $http(createRequest('get', urlBase() + '/statustrees/correlators_view/correlators'));
+        };
+
         api.getStatusTreesForTop = function () {
             return $http(createRequest('get', urlBase() + '/statustrees/top_view'));
+        };
+
+        api.getStatusTreesForSub = function () {
+            return $http(createRequest('get', urlBase() + '/statustrees/sub_view'));
+        };
+
+        api.getStatusTreesForCbf = function () {
+            return $http(createRequest('get', urlBase() + '/statustrees/cbf_view'));
         };
 
         api.getReceptorList = function () {
@@ -162,6 +184,46 @@
                         api.receptorList.push(item);
                     });
                     deferred.resolve(api.receptorList);
+                }, function (result) {
+                    $log.error(result);
+                    deferred.reject();
+                });
+
+            return deferred.promise;
+        };
+
+        api.getCorrelatorList = function () {
+            api.correlatorList.splice(0, api.correlatorList.length);
+
+            var deferred = $q.defer();
+            $http(createRequest('get', urlBase() + '/installed-config/receptors'))
+                .then(function (result) {
+                    result.data.forEach(function (item) {
+                        if (api.correlatorList.length < 4) {
+                            api.correlatorList.push(item);
+                            };
+                    });
+                    deferred.resolve(api.correlatorList);
+                }, function (result) {
+                    $log.error(result);
+                    deferred.reject();
+                });
+
+            return deferred.promise;
+        };
+
+
+        api.getCorrelatorListBAC = function () {
+            api.correlatorList.splice(0, api.correlatorList.length);
+
+            var deferred = $q.defer();
+            $http(createRequest('get', urlBase() + '/system-config/sections/system/dataproxy_nrs'))
+                .then(function (result) {
+                    var correlators = result.data.split(',');
+                    correlators.forEach(function (item) {
+                        api.correlatorList.push('m00'+item);
+                    });
+                    deferred.resolve(api.correlatorList);
                 }, function (result) {
                     $log.error(result);
                     deferred.reject();
