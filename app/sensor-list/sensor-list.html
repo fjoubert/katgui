@@ -1,3 +1,5 @@
+ <form novalidate name="frm1" autocomplete="off" ng-submit="vm.searchFilter=searchText">
+
 <div layout="column" flex ng-controller="SensorListCtrl as vm" style="min-height: 640px; min-width: 1000px">
     <div flex layout="row" style="margin: 8px">
         <div layout="column" style="width: 220px">
@@ -28,13 +30,21 @@
                         ng-change="vm.updateURL()">
                         Show Value Timestamps
                     </md-checkbox>
+                    <md-checkbox class="md-primary" ng-model="vm.hideWarnSensors" ng-change="vm.updateURL()" ng-click="$event.stopPropagation()"
+                        md-theme="{{themePrimaryButtons}}" style="font-size: 13px; margin: 0 4px; padding: 0">
+                        Hide Warn Sensors
+                    </md-checkbox>
                     <md-checkbox class="md-primary" ng-model="vm.hideNominalSensors" ng-change="vm.updateURL()" ng-click="$event.stopPropagation()"
                         md-theme="{{themePrimaryButtons}}" style="font-size: 13px; margin: 0 4px; padding: 0">
                         Hide Nominal Sensors
                     </md-checkbox>
-                    <input class="fade-in search-input-box" style="margin: 0 4px" type="search" ng-model-options="{ debounce: 300 }"
-                        ng-model="vm.searchFilter" ng-change="vm.updateURL()" placeholder="Search Sensors..."
+                    <input type="text" class="fade-in search-input-box" style="margin: 0 4px" name="search" placeholder="Search...(press enter)"
+                     ng-model="searchText" ng-enter="vm.searchFilter=searchText"
                     />
+                    <md-button class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" ng-click="vm.searchFilter=searchText"
+                        style="max-width: 28px; min-width: 28px; margin: 0 4px" type="submit" ng-show="false">
+                        <span class="fa fa-caret-right"></span>
+                    </md-button>
                 </div>
 
                 <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center" style="padding: 0px 8px; max-height: 17px; overflow: hidden">
@@ -72,7 +82,7 @@
                 <div flex class="overlay-progress-circular" layout="row" layout-align="center center" ng-if="vm.showProgress">
                     <md-progress-circular md-mode="indeterminate"></md-progress-circular>
                 </div>
-                <div ng-repeat="key in filteredSensors = (vm.keys(vm.sensorValues) | regexSearchAndOrder:vm.sensorsOrderByFields:vm.searchFilter:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse:vm.sensorValues) | filter:filterByNotNominal track by key"
+                <div ng-repeat="key in filteredSensors = (vm.keys(vm.sensorValues) | regexSearchAndOrder:vm.sensorsOrderByFields:vm.searchFilter:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse:vm.sensorValues) | filter:filterByStatus track by key"
                     ng-class="{'selected-for-chart-row': vm.sensorValues[key].selectedForChart}" layout="row"
                     layout-align="start center" ng-click="vm.plotLiveSensorFeed(key)">
                     <span title="" class="resource-sensor-name" ng-class="vm.sensorNameResizeClassName">{{vm.sensorValues[key].shortName}}</span>

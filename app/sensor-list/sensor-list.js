@@ -20,6 +20,7 @@
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
         vm.hideNominalSensors = $stateParams.hideNominal? $stateParams.hideNominal === 'true': false;
+        vm.hideWarnSensors = $stateParams.hideWarn? $stateParams.hideWarn === 'true': false;
         vm.sensorValues = {};
         vm.showValueTimestamp = false;
         vm.subscribedSensors = [];
@@ -273,16 +274,20 @@
             });
         };
 
-        $scope.filterByNotNominal = function (sensor) {
-            return !vm.hideNominalSensors || vm.hideNominalSensors && vm.sensorValues[sensor].status !== 'nominal';
+        $scope.filterByStatus = function (sensor) {
+            show = !vm.hideNominalSensors || vm.hideNominalSensors && vm.sensorValues[sensor].status !== 'nominal';
+            show = show && (!vm.hideWarnSensors || vm.hideWarnSensors && vm.sensorValues[sensor].status !== 'warn');
+            return show
         };
 
         vm.updateURL = function () {
             $state.go('sensor-list', {
                 component: vm.resourceSensorsBeingDisplayed? vm.resourceSensorsBeingDisplayed: null,
                 filter: vm.searchFilter? vm.searchFilter: null,
-                hideNominal: vm.hideNominalSensors? 'true': null},
+                hideNominal: vm.hideNominalSensors? 'true': null,
+                hideWarn: vm.hideWarnSensors? 'true': null},
                 { notify: false, reload: false });
+            }
         };
 
         //create to function to bind to, but dont do anything with it yet
