@@ -170,7 +170,7 @@
                     vm.regexStrings[existingItemIndex].offset = newOffset;
                     vm.regexStrings[existingItemIndex].size = newSize;
                 }
-                url += encodeURI(component + ':' + regex + ':' + newOffset.left + ',' + newOffset.top + ',' + newSize.width + ',' + newSize.height + ';');
+                url += component + ':' + regex + ':' + newOffset.left + ',' + newOffset.top + ',' + newSize.width + ',' + newSize.height + ';';
             }
             return url.length > 0? url: null;
         };

@@ -561,9 +561,15 @@
             },
         });
         $stateProvider.state('customHealth', {
-            url: '/custom-health',
+            url: '/custom-health/?layout',
             templateUrl: 'app/health/custom-health/custom-health.html',
-            title: 'Custom Health'
+            title: 'Custom Health',
+            params: {
+                layout: {
+                    value: null,
+                    squash: true
+                }
+            },
         });
         $stateProvider.state('customHealthView', {
             url: '/custom-health-view/{configItem}',
