@@ -371,7 +371,7 @@
             });
         };
 
-        api.throttleGetProgramBlocksObservationSchedule = _.throttle(api.getProgramBlocksObservationSchedule, 30);
+        api.throttleGetProgramBlocksObservationSchedule = _.throttle(api.getProgramBlocksObservationSchedule, 10000);
 
         api.getCompletedScheduleBlocks = function(sub_nr, max_nr) {
             //TODO smoothly combine the existing list with the new list so that there isnt a screen flicker
