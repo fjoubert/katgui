@@ -8,3 +8,5 @@ coverage
 metrics
 test-results
 localhostindex.html
+git rm --cached package-lock.json
+git rm --cached package.json 
