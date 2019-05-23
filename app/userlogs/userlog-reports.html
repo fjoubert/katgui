@@ -44,11 +44,20 @@
                             data-ng-model="vm.endTime" ng-keypress="vm.showEndDatePicker = false" ng-click="$event.stopPropagation()"
                             data-on-set-time="vm.showEndDatePicker = false; vm.onEndTimeSet(vm.endTime)"></datetimepicker>
                     </div>
-                    <md-input-container md-theme="{{$root.themePrimaryButtons}}" title="{{vm.selectedProgramNames}}" style="min-width: 250px; max-width: 250px">
+                    <md-input-container md-theme="{{$root.themePrimaryButtons}}" title="{{vm.selectedProgramNames}}" style="min-width: 200px; max-width: 200px">
                         <md-select ng-model="vm.selectedProgramNames" multiple placeholder="Select program name(s)">
                             <md-option ng-value="programName" ng-repeat="programName in vm.programNames | orderBy:programName">{{programName}}</md-option>
                         </md-select>
                     </md-input-container>
+
+                    <!-- <input ng-model="vm.searchId" md-no-float placeholder="Search by UserLog Id"
+                            style="min-width: 150px; max-width: 150px; margin-left: 10px;"/> -->
+
+                    <md-input-container md-no-float class="md-block"
+                          style="min-width: 150px; max-width: 150px; margin-left: 10px; height: 35px;">
+                        <input ng-model="vm.userlogId" type='number' placeholder="Search by UserLog Id">
+                    </md-input-container>
+
                     <md-button class="add-tab md-primary md-raised" ng-click="vm.queryUserlogs(event)"
                                style="margin-right: 0;">Preview Report
                     </md-button>

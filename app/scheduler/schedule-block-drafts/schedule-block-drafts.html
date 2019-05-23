@@ -27,6 +27,8 @@
                     <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'type' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'type' && vm.draftsOrderBy.reverse}"
                         style="margin-right: 4px;"></span>
                     </span>
+                    <span style="width: 137px" class="subheader-text">Verification State</span>
+                    <span style="width: 137px" class="subheader-text">Subarray</span>
                     <span style="width: 162px" class="subheader-text" ng-click="vm.setDraftsOrderBy('desired_start_time')">
                         <span>Desired Time</span>
                     <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}"
@@ -36,7 +38,8 @@
             </md-toolbar>
             <div ng-click="showDatePicker = false" flex id="scheduleDraftDataRepeat" style="overflow: auto">
                 <div ng-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy:vm.draftsOrderBy.reverse) track by item.id"
-                    layout="row" ng-click="vm.setSelectedScheduleDraft(item)" ng-class="{'selected-schedule-row md-whiteframe-z3': item === vm.selectedScheduleDraft}"
+                    layout="row" ng-click="vm.setSelectedScheduleDraft(item)"
+                    ng-class="{'selected-schedule-row md-whiteframe-z3': item === vm.selectedScheduleDraft}"
                     class="schedule-draft-item" layout-align="start center" style="padding: 0 4px">
                     <md-progress-linear md-theme="grey" ng-if="item.verification_state === 'VERIFYING'" class="md-primary progress-bar-fill"
                         md-mode="indeterminate" style="position: absolute; left: 0; right: 0;">
@@ -57,6 +60,8 @@
                     </md-select>
                     <span ng-if="!item.editing" style="width: 134px; margin: 0 4px" ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}">
                         {{item.type}}</span>
+                    <span style="width: 134px; margin: 0 4px">{{item.verification_state}}</span>
+                    <span style="width: 134px; margin: 0 4px">{{item.sub_nr}}</span>
                     <input ng-if="item.editing" ng-change="item.isDirty = true; vm.validateInputDate(item);" type="text"
                         title="UTC" class="schedule-item-input schedule-item-date-input" ng-class="{'invalid-date-error': item.hasInvalidInput}"
                         ng-click="vm.openDatePicker(item, $event, $index);" ng-model="item.desired_start_time"
@@ -75,6 +80,9 @@
                             </md-menu-item>
                             <md-menu-item>
                                 <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="vm.editInstructionSet(item, $event)">Edit Instruction Set</md-button>
+                            </md-menu-item>
+                            <md-menu-item ng-if="!item.sub_nr">
+                                <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="vm.verifyUnassignedDraft(item)">Verify Unassigned</md-button>
                             </md-menu-item>
                             <md-menu-item>
                                 <md-button ng-disabled="item.type !== 'OBSERVATION'" ng-click="vm.viewSBTasklog(item)">View Dryrun</md-button>
@@ -95,7 +103,7 @@
                                     ng-click="parent.vm.removeSBFromAnyPB(item)" title="Remove Schedule block from any Program Block">Remove SB From PB</md-button>
                             </md-menu-item>
                             <md-menu-item>
-                                <md-button ng-click="parent.vm.addUserLog($event)" title="Add user log">
+                                <md-button ng-click="parent.vm.addUserLog($event, item)" title="Add user log">
                                     <span style="margin-right: 4px"></span>
                                     <span>Add User Log...</span>
                                 </md-button>

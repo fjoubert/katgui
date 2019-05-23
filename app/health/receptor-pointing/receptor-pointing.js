@@ -13,10 +13,12 @@
         vm.targets = [];
         vm.targetsToDisplay = [];
         vm.filters = [];
+        vm.selectedMinElevation = 15;
         vm.sensorValues = {};
         vm.trailDots = 30;
+
         // map subarray number to a colour
-        vm.subarrayColors = d3.scale.category20();
+        vm.subarrayColors = d3.scale.category20().domain(d3.range(1,20));
         vm.subarrayNrs = [];
 
         vm.sensorsToConnectRegex = [
@@ -163,13 +165,21 @@
                 var receptor = sensor.name.split('_')[0];
                 sensor.name = sensor.name.replace(receptor + '_', '');
                 vm.receptors[receptor][sensor.name] = sensor;
+
+                // work out the class for the receptor
+                var classNames = receptor + '_actual receptor-legend-item md-whiteframe-z1 unselectable';
+                if (vm.receptors[receptor]['mode'] && vm.receptors[receptor]['mode'].value==='POINT'
+                    && vm.receptors[receptor]['lock'] && !vm.receptors[receptor]['lock'].value)
+                  classNames += ' unlocked';
+
+                vm.receptors[receptor]['class_names'] = classNames;
             }
         };
 
         vm.redraw = function(horizonMaskToggled) {
             vm.redrawChart(
                 vm.receptors, vm.skyPlotData, vm.showNames, vm.showTrails,
-                vm.showGridLines, vm.trailDots, horizonMaskToggled);
+                vm.showGridLines, vm.trailDots, horizonMaskToggled, vm.selectedMinElevation);
         };
 
         vm.toggleHorizonMask = function(receptor) {

@@ -49,7 +49,7 @@
         </md-button>
     </div>
 
-    <div ng-show="!vm.childStateShowing && vm.subarrays.length > 0" layout="column" layout-align="center center"
+    <div ng-show="!vm.childStateShowing && vm.subarrays.length > 0" layout="column" layout-align="none center"
          style="margin: 0 8px">
         <div style="padding: 8px">
             <div ng-repeat="subarray in vm.subarrays | orderBy:'id' track by $index" layout="column" layout-align="start center"

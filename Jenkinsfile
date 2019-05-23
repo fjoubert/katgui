@@ -1,35 +1,49 @@
-node('docker') {
+pipeline {
 
-    docker.image('camguinode:latest').inside('-u root') {
-        stage 'Cleanup workspace'
-            sh 'chmod 777 -R .'
-            sh 'rm -rf *'
+    agent {
+        label 'camguinode'
+    }
 
-        stage 'Checkout SCM'
-           checkout([
-               $class: 'GitSCM',
-               branches: [[name: "refs/heads/${env.BRANCH_NAME}"]],
-               extensions: [[$class: 'LocalBranch']],
-               userRemoteConfigs: scm.userRemoteConfigs,
-               doGenerateSubmoduleConfigurations: false,
-               submoduleCfg: []
-           ])
+    stages {
+        stage('Checkout SCM') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "refs/heads/${env.BRANCH_NAME}"]],
+                    extensions: [[$class: 'LocalBranch']],
+                    userRemoteConfigs: scm.userRemoteConfigs,
+                    doGenerateSubmoduleConfigurations: false,
+                    submoduleCfg: []
+                ])
+            }
+        }
 
-        stage 'Install & Unit Tests'
-            timeout(time: 30, unit: 'MINUTES') {
-                sh './update.sh'
+        stage('Install & Unit Tests') {
+            options {
+                timestamps()
+                timeout(time: 30, unit: 'MINUTES')
             }
 
-        stage 'Build .whl & .deb'
-            sh 'mv dist/ katgui'
-            sh 'fpm -s "dir" -t "deb" --name katgui --version $(kat-get-version.py) --description "The operator interface for SKA-SA" katgui=/var/www'
+            steps {
+                sh './update.sh'
+            }
+        }
 
-        stage 'Archive build artifact .deb'
-            archive '*.deb'
+        stage('Build & publish packages') {
+            when {
+                branch 'master'
+            }
 
-        stage 'Trigger downstream publish'
-            build job: 'publish-local', parameters: [
-                string(name: 'artifact_source', value: "${currentBuild.absoluteUrl}/artifact/*zip*/archive.zip"),
-                string(name: 'source_branch', value: "${env.BRANCH_NAME}")]
+            steps {
+                sh 'mv dist/ katgui'
+                sh 'fpm -s "dir" -t "deb" --name katgui --version $(kat-get-version.py) --description "The operator interface for SKA-SA" katgui=/var/www'
+                archiveArtifacts '*.deb'
+
+                // Trigger downstream publish job
+                build job: 'ci.publish-artifacts', parameters: [
+                        string(name: 'job_name', value: "${env.JOB_NAME}"),
+                        string(name: 'build_number', value: "${env.BUILD_NUMBER}")]
+            }
+        }
     }
 }

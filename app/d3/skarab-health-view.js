@@ -3,153 +3,168 @@ angular.module('katGui.d3')
 .directive('skarabHealthView', function($rootScope, $timeout, d3Util) {
     return {
         restrict: 'E',
-        controller: 'SKARABHealthCtrl',
-        controllerAs: 'vm',
-        scope: {
-        },
         link: function(scope, element) {
             const format = d3.time.format.utc("%Y-%m-%d %X");
 
-            var circles = null;
+            var rectangles = null;
+            var skarabTexts = null;
 
             var margin = {
-                top: 20,
+                top: 10,
                 right: 20,
-                left: 20,
-                bottom: 50
-            };
-
-            var chart_margin = {
-              left: 30
+                left: 60,
+                bottom: 30
             };
 
             var svg;
             var width, height, radius;
+            var border = 2;
 
             scope.vm.redrawStatus = function () {
 
-              width = element[0].clientWidth-margin.left-margin.right;
-              height = width*scope.vm.NUM_OF_RACKS/scope.vm.NUM_OF_SLOTS;
+              width = element[0].clientWidth - margin.left - margin.right;
+              height = element[0].clientHeight - margin.top - margin.bottom;
 
-              radius = width/(scope.vm.NUM_OF_SLOTS*2)-5;
+
+              unitWidth = width/scope.vm.NUM_OF_RACKS - border;
+              unitHeight = height/scope.vm.NUM_OF_SLOTS - border;
+
               d3.select('svg').remove();
 
-              d3.select(element[0]).append("svg")
+              svg = d3.select(element[0]).append("svg")
                       .attr("width", element[0].clientWidth)
-                      .attr("height", height + margin.bottom)
-                      .attr("transform", "translate(0" + ", " + margin.top + ")");
+                      .attr("height", element[0].clientHeight);
 
-              svg = d3.select('svg');
 
-               var x = d3.scale.linear().domain([0,scope.vm.NUM_OF_SLOTS+1]).range([0, width]);
-               var y = d3.scale.linear().domain([0,scope.vm.NUM_OF_RACKS+1]).range([0, height]);
+              var area = svg.append("g")
+                            .attr("transform","translate(" + margin.left + "," + margin.top + ")")
+                            .attr("width", width)
+                            .attr("height", height);
 
-               var xAxis = d3.svg.axis().scale(x).orient("top").ticks(10);
-               var yAxis = d3.svg.axis().scale(y).orient("right").ticks(10);
+              area.append("rect")
+                  .attr("x", 0)
+                  .attr("y", 0)
+                  .attr("width", width)
+                  .attr("height", height)
+                  .attr('fill', '#BDBDBD');
 
-              function draw_circle(selection) {
-                 var circleAttributes
-                     = selection.attr("cx", function (d) { return x(d.slot); })
-                                .attr("cy", function (d) { return y(d.rack); })
-                                .attr("ObjectID",function(d) {return d.id;})
-                                .style("stroke", "white")
-                                .style("stroke-width", 0)
-                                .on('mouseover',function(d) {
-                                  d3.select(this)
-                                 	  .style("fill-opacity", .8)
-                                    .style("stroke-width", 5);
+              var graph = area.append("g")
+                              .attr("x", 0)
+                              .attr("y", 0)
+                              .attr("width", width-1)
+                              .attr("height", height)
+                              .attr("transform","translate(1,1)")
 
-                                  var x =  d3.event.pageX;
-                                  if (d.slot > 43*2/3)
-                                    x = x-350;
-                                  tooltipdiv.html(
-                                        "<table>" +
-                                        "<tr><th colspan='2'>" + d.name + " value at <br>" + format(new Date(d.sensor.time*1000)) + "</th></tr>" +
-                                        "<tr><td class='sensor_field'>Location</td><td>" + d.position + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Description</td><td>" + d.sensor.description + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Status</td><td>" + d.sensor.status + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Value</td><td>" + d.sensor.value + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Value Timestamp</td><td>" + format(new Date(d.sensor.value_ts*1000)) + "</td></tr>" +
-                                        "</table>")
-                                       .style("left", x + "px")
-                                       .style("top", (d3.event.pageY-50) + "px");
+              var x = d3.scale.linear().domain([scope.vm.NUM_OF_RACKS, 0]).range([0, width]);
+              var y = d3.scale.linear().domain([scope.vm.NUM_OF_SLOTS, 0]).range([0, height]);
 
-                                  tooltipdiv.transition()
-                                       .duration(200)
-                                       .style("opacity", .9);
-                                 })
-                                 .on('mouseout',function (d) {
-                                   d3.select(this)
-                                     .style("fill-opacity", 1)
-                                     .style("stroke-width", 0);
+              var xAxis = d3.svg.axis().scale(x).orient("top").ticks(10);
+              var yAxis = d3.svg.axis().scale(y).orient("right").ticks(10);
 
-                                     tooltipdiv.transition()
-                                         .duration(500)
-                                         .style("opacity", 0);
-                                 })
-                                .attr("r", function (d) {
-                                  if (d.status=='empty')
-                                    return 0;
+              function draw_rectangles(selection) {
+                 var rectangleAttributes =
+                    selection.attr("x", function (d) { return x(d.rack); })
+                            .attr("y", function (d) { return y(d.slot); })
+                            .attr("ObjectID",function(d) { return d.id; })
+                            .style("stroke", "white")
+                            .style("stroke-width", 0)
+                            .attr("width", function (d) {
+                              return unitWidth;
+                            })
+                            .attr("height", function (d) {
+                              return unitHeight;
+                            })
+                            .attr("class", function(d) {
+                              return d.status + "-child";
+                            })
+                            .on('mouseover',function(d) {
+                              d3.select(this)
+                             	  .style("fill-opacity", .8)
+                                .style("stroke-width", 5)
+                                .style("cursor", function(d) {
+                                  if (d.name)
+                                    return "pointer";
 
-                                  if (d.status=='nominal')
-                                    return radius/2;
-
-                                   return radius;
-                                })
-                                .attr("class", function(d) {
-                                  return d.status + "-child";
+                                  return 'default';
                                 });
+                            })
+                            .on('mouseout',function (d) {
+                              d3.select(this)
+                               .style("fill-opacity", 1)
+                               .style("stroke-width", 0)
+                               .style("cursor", "default");
+                            })
+                            .on('click', function(d){
+                              if (d.name) {
+                                var components = d.name.split('\.');
+                                scope.vm.navigateToSensorList(components[0],
+                                  components[2].substring(0, 11));
+                              }
+                            });
                  };
 
+              rectangles = graph.selectAll("rect")
+                .data(scope.vm.data)
+                .enter()
+                .append("rect")
+                .call(draw_rectangles);
 
-                var area = svg.append("g")
-                                 .attr("transform","translate(" + chart_margin.left + ",0)")
-                                 .attr("width", width)
-                                 .attr("height", height);
+              var skarabArea = area.append('g');
 
-                 area.append("rect")
-                     .attr("x", x(0)+radius)
-                     .attr("y", y(1)-radius-margin.top/2)
-                     .attr("width", x(scope.vm.NUM_OF_SLOTS+1)-2*radius)
-                     .attr("height", y(scope.vm.NUM_OF_RACKS+1)-radius)
-                     .attr('fill', '#BDBDBD');
+              skarabTexts = skarabArea.selectAll('text')
+                                  .data(scope.vm.data)
+                                  .enter()
+                                  .append('text');
 
+              skarabTexts.attr("x", function (d) { return x(d.rack) + unitWidth/2; })
+                          .attr("y", function (d) { return y(d.slot-1) - 5; })
+                          .attr("ObjectID", function(d) { return d.id; })
+                          .style('text-anchor', 'middle')
+                          .attr('fill', 'white')
+                          .attr('id', function(d) { return d.position.replace(':', ''); })
+                          .text(function(d) {
+                            if (d.name) {
+                              var subs = d.name.split('.');
+                              subs.pop();
 
-                circles = area.selectAll("circle")
-                  .data(scope.vm.data)
-                  .enter()
-                  .append("circle")
-                  .call(draw_circle);
+                              return subs.pop().replace('skarab', '');
+                            }
+                          });
 
-               var textArea = area.append('g');
-               var slotTexts = textArea.selectAll("text")
-                                .data(['05','10','15','20','25','30','35','40'])
-                                .enter()
-                                .append("text");
+              var textArea = area.append('g');
+              var slotTexts = textArea.selectAll("text")
+                              .data(['05','10','15','20','25','30','35','40'])
+                              .enter()
+                              .append("text");
 
-              slotTexts.attr("x", function(d) { return x(d)-8; })
-                    .attr("y", function(d) { return y(scope.vm.NUM_OF_RACKS+1)+radius; })
+              slotTexts.attr("x", function(d) { return -20; })
+                    .attr("y", function(d) { return y(d-1) - 7; })
                     .text( function (d) { return ""+d; })
                     .attr("font-family", "sans-serif")
                     .attr("font-size", "14px")
                     .attr("fill", "grey");
 
+              textArea.append('text').text('SLOT')
+                      .attr("x", function(d) { return -height/2; })
+                      .attr("y", function(d) { return -30; })
+                      .attr("font-family", "sans-serif")
+                      .attr("font-size", "16px")
+                      .attr("transform", "rotate(270)")
+
+
               textArea = area.append('g');
               var rackTexts = textArea.selectAll("text")
-                               .data(['1','2','3','4','5','6','7','8','9'])
+                               .data(['9','8','7','6','5','4','3','2','1'])
                                .enter()
                                .append("text");
 
-              rackTexts.attr("x", function(d) { return x(0); })
-                   .attr("y", function(d) { return y(d)+8; })
-                   .text( function (d) { return ""+d; })
+              rackTexts.attr("x", function(d) { return x(d) + unitWidth/2; })
+                   .attr("y", function(d) { return height + 15; })
+                   .style('text-anchor', 'middle')
+                   .text( function (d) { return "RACK B"+d; })
                    .attr("font-family", "sans-serif")
                    .attr("font-size", "14px")
                    .attr("fill", "grey");
-
-               var tooltipdiv = d3.select(element[0]).append("div")
-                  .attr("class", "skarab-tooltip")
-                  .style("opacity", 0);
             };
 
             var unbindResize = scope.$watch(function() {
@@ -173,26 +188,24 @@ angular.module('katGui.d3')
 
 
             scope.vm.updateStatus = function(obj) {
-              if (!circles)
+              if (!rectangles)
                 return;
-              circles.data([obj], function(d) {return d.id;})
-                    .transition()
-                    .duration(1000)
-                    .attr("r", 0)
-                    .transition()
-                    .duration(1000)
-                    .attr("r", function (d) {
-                      if (d.status=='empty')
-                        return 0;
 
-                      if (d.status=='nominal')
-                        return radius/2;
-
-                       return radius;
-                    })
+              rectangles.data([obj], function(d) {return d.id;})
                     .attr("class", function(d) {
                       return d.status + "-child";
                     });
+
+              skarabTexts.data([obj], function(d) {return d.id;})
+                    .text(function(d) {
+                      if (d.name) {
+                        var subs = d.name.split('.');
+                        subs.pop();
+
+                        return subs.pop().replace('skarab', '');
+                      }
+                    });
+
             };
         }
     };

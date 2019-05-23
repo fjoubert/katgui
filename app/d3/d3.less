@@ -58,7 +58,6 @@ rect.parent,
 .receptor-pointing-tooltip-top {
     background: white;
     position: absolute;
-    pointer-events: none;
     padding: 6px;
     opacity: 0.9;
     z-index: 1000;
@@ -66,6 +65,16 @@ rect.parent,
     span {
         text-shadow: none;
         font-weight: normal;
+    }
+
+    .close-receptor-info {
+      color: #E0E0E0;
+      width: 15px;
+    }
+
+    .close-receptor-info:hover {
+      color: #FF1744;
+      cursor: pointer;
     }
 }
 
@@ -275,4 +284,8 @@ actions-button {
 receptor-pointing-polar foreignObject {
     width: 300px;
     height: 50px;
+}
+
+receptor-pointing-horizontal .y-axis g:first-child text {
+  fill: #3D5AFE;
 }

@@ -27,6 +27,10 @@
                         style="width: 160px; margin: 0;"><b>{{process.name | uppercase}}</b></span>
 
                     <div layout="row" style="position: absolute; right: 0; top: 0">
+                        <span class="icon-button fa fa-external-link" md-ink-ripple title="Navigate to logtrail"
+                            ng-click="vm.navigateToLogtrail(process); $event.stopPropagation()"></span>
+                        <span class="icon-button fa fa-th-list" md-ink-ripple title="Navigate to sensor list"
+                            ng-click="vm.navigateToSensorList(process); $event.stopPropagation()"></span>
                         <span class="icon-button fa fa-file-text-o" md-ink-ripple title="Tail last 30 lines of process log"
                             ng-click="vm.tailProcess(nmKey, process); $event.stopPropagation()"></span>
                         <span class="icon-button fa fa-play" md-ink-ripple ng-show="$root.expertOrLO && !vm.sensorValues[process.runningSensor].value"

@@ -4,7 +4,7 @@
         .controller('ProcessControlCtrl', ProcessControlCtrl);
 
     function ProcessControlCtrl($rootScope, $scope, MonitorService, KatGuiUtil, $interval, $log, $timeout, ConfigService,
-        ControlService, MOMENT_DATETIME_FORMAT, NotifyService, $state, USER_ROLES) {
+        ControlService, MOMENT_DATETIME_FORMAT, NotifyService, ConfigService, $state, USER_ROLES) {
 
         var vm = this;
         vm.sensorValues = {};
@@ -12,6 +12,7 @@
         vm.showProgress = false;
         vm.processSensors = ['running', 'args', 'pid', 'return_code'];
         vm.sensorsRegex = vm.processSensors.join('|');
+        vm.resourcesNames = []
 
         vm.initSensors = function() {
             vm.nodemans = {};
@@ -55,6 +56,14 @@
                         vm.showProgress = false;
                     });
                 });
+
+            if (vm.resourcesNames.length === 0) {
+                ConfigService.listResourcesFromConfig().then(function() {
+                    for (var name in ConfigService.resources) {
+                        vm.resourcesNames.push(name);
+                    }
+                });
+            }
         };
 
         vm.collapseAll = function(nm_name) {
@@ -121,6 +130,24 @@
             }, function(error) {
                 NotifyService.showPreDialog('Error displaying tail of ' + process.name, error.data.err_msg);
             });
+        };
+
+        vm.navigateToSensorList = function(process) {
+            if (vm.resourcesNames.indexOf(process.name) > -1) {
+                $state.go('sensor-list',
+                {
+                    component: process.name
+                });
+            }
+            else {
+                NotifyService.showSimpleDialog(
+                  'Could not navigate to sensor list',
+                  process.name + ' Possibly not a Proxy nor a Component');
+            }
+        }
+
+        vm.navigateToLogtrail = function(process) {
+            $rootScope.openLogtrailInNewTab(process.name)
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {

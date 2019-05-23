@@ -36,9 +36,11 @@ angular.module('katGui.d3')
 
                 scope.skyPlotData = [];
                 scope.receptorData = [];
+                scope.elevationLimit = 0;
 
                 scope.redrawFunction = function (receptors, skyPlot, showNames, showTrails,
-                                                 showGridLines, trailDots, horizonMaskToggled) {
+                                                 showGridLines, trailDots, horizonMaskToggled,
+                                                 elevationLimit) {
                     scope.trailDots = trailDots;
                     scope.showTrails = showTrails;
                     scope.receptorData = [];
@@ -62,9 +64,11 @@ angular.module('katGui.d3')
                     });
 
                     if (!svg || scope.showGridLines !== showGridLines || newHorizonData ||
-                            horizonMaskToggled || scope.showNames !== showNames) {
+                            horizonMaskToggled || scope.showNames !== showNames
+                          || scope.elevationLimit != elevationLimit) {
                         scope.showGridLines = showGridLines;
                         scope.showNames = showNames;
+                        scope.elevationLimit = elevationLimit;
                         drawSvg();
                     }
 
@@ -115,7 +119,7 @@ angular.module('katGui.d3')
                         .attr("class", "y axis y-axis");
 
                     x.domain([-190, 190]);
-                    y.domain([-5, 100]);
+                    y.domain([scope.elevationLimit-5, 100]);
 
                     //create the axis
                     xAxisElement.call(xAxis);

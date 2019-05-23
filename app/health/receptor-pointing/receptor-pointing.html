@@ -1,6 +1,14 @@
 <div flex ng-controller="ReceptorPointingCtrl as vm" layout="column" style="position: relative; overflow: hidden"
      ng-class="{'connection-lost-bg':!$root.connectedToMonitor}">
 
+     <style id="unlocked">
+       .unlocked {
+         min-height: 35px;
+         background-color:#ffffff00;
+         border: 5px solid;
+       }
+     </style>
+
     <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0; position: absolute; right: 8px; top: 120px;">
         <md-button class="md-icon-button inline-action-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'pointing-menu-content')">
             <md-icon md-menu-origin class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
@@ -34,6 +42,15 @@
                     <span>Show Gridlines</span>
                 </md-checkbox>
             </md-menu-item>
+
+            <md-menu-item>
+              <span style='padding-left:0; padding-right:10px;'>
+                  Elevation Zoom (&#176)</span>
+              <md-slider md-discrete ng-model="vm.selectedMinElevation"
+                  style='padding-right:5px; padding-right:15px'
+                  step="5" min="0" max="80" ng-change="vm.redraw(false)"">
+              </md-slider>
+            </md-menu-item>
         </md-menu-content>
     </md-menu>
 
@@ -41,10 +58,10 @@
         <div style="height: 90px; margin-bottom: 12px" ng-show="vm.showReceptorStates">
             <!-- <div ng-repeat="(receptorName, receptor) in vm.receptorsData | filter:{'skyPlot':false} track by $index" -->
             <div ng-repeat="(receptorName, receptor) in vm.receptors"
-                 class="{{receptorName + '_actual receptor-legend-item md-whiteframe-z1 unselectable'}}"
+                 class="{{vm.receptors[receptorName]['class_names']}}"
                  ng-click="vm.toggleHorizonMask(receptor)" title="{{'Click to toggle the horizon mask for ' + receptorName}}"
                  style="overflow: visible; display: inline-block" ng-class="{'border-black-2px': receptor.showHorizonMask}"
-                 ng-mouseenter="vm.receptorHoverName=receptorName" ng-mouseleave="vm.receptorHoverName=''">
+                 ng-mouseenter="vm.receptorHoverName=receptorName">
                 <div class="receptor-legend-item-text">{{receptorName}}</div>
                 <span ng-show="vm.receptors[receptorName].mode.value === 'POINT'" class="pointing-showing">P</span>
                 <span ng-show="vm.receptors[receptorName].lock.value" class="fa fa-asterisk on-target-span"
@@ -93,7 +110,15 @@
     <div class="md-whiteframe-z3 receptor-pointing-tooltip-top" ng-show="vm.receptorHoverName.length > 0"
          style="top: 120px; left: 8px; min-width: 268px"
          layout="column" layout-align="start">
-        <span ng-if="vm.receptorHoverName.length > 0" class="{{vm.receptorHoverName+ '_actual'}}" style="width: 100%; text-align: center"><b>{{vm.receptorHoverName}}</b></span>
+        <div>
+          <span ng-if="vm.receptorHoverName.length > 0" class="{{vm.receptorHoverName+ '_actual'}}"
+            style="width: 250px; text-align: center; float: left">
+            <b>{{vm.receptorHoverName}}</b>
+          </span>
+          <i class="fa fa-times-circle close-receptor-info" title='close'
+            ng-click="vm.receptorHoverName=''"></i>
+        </div>
+
         <span>azim: <b>{{vm.receptors[vm.receptorHoverName].pos_actual_pointm_azim.value | number:2}}</b>, elev: <b>{{vm.receptors[vm.receptorHoverName].pos_actual_pointm_elev.value | number:2}}</b></span>
         <span>azim: <b>{{vm.receptors[vm.receptorHoverName].pos_request_pointm_azim.value | number:2}}</b>, elev: <b>{{vm.receptors[vm.receptorHoverName].pos_request_pointm_elev.value | number:2}}</b> (requested)</span>
         <span>ra: <b>{{vm.receptors[vm.receptorHoverName].pos_request_base_ra.value | number:2}}</b>, dec: <b>{{vm.receptors[vm.receptorHoverName].pos_request_base_dec.value | number:2}}</b> (requested)</span>

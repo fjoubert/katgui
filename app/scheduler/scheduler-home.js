@@ -23,6 +23,8 @@
         vm.subarray = null;
         vm.products = [];
         vm.bandsMap = {};
+        vm.subBandsMap = {};
+        vm.defaultCentreFreqMap = {};
         vm.dumpRatesMap = {};
         vm.defaultDumpRatesMap = {};
         vm.bands = [];
@@ -39,6 +41,7 @@
             "subarray_._product",
             "subarray_._state",
             "subarray_._band",
+            "subarray_._requested_rx_centre_frequency",
             "subarray_._config_label",
             "subarray_._maintenance",
             "subarray_._delegated_ca",
@@ -121,6 +124,20 @@
                         vm.bandsMap[product] = [];
                     }
                 });
+            });
+
+        ConfigService.getSubBandConfig()
+            .then(function(subBandConfig) {
+                vm.subBandsMap = {};
+                vm.defaultCentreFreqMap = {};
+                var subBandKeys = Object.keys(subBandConfig);
+                subBandKeys.forEach(function(sub_band) {
+                      if (subBandConfig[sub_band].sub_bands) {
+                          vm.subBandsMap[sub_band] = subBandConfig[sub_band].sub_bands
+                          vm.defaultCentreFreqMap[sub_band] = subBandConfig[sub_band].default
+                  };
+              });
+
             });
 
         vm.iAmAtLeastCA = function() {
@@ -266,7 +283,11 @@
         };
 
         vm.setBand = function(band) {
-            ObsSchedService.setBand(vm.subarray.id, band);
+            ObsSchedService.setBand(vm.subarray.id, band, vm.defaultCentreFreqMap[band]);
+        };
+
+        vm.setFrequency = function(freq) {
+          ObsSchedService.setFrequency(vm.subarray.id, freq);
         };
 
         vm.openBandsDialog = function(event) {
@@ -911,6 +932,75 @@
             return classes;
         };
 
+        vm.showReactivateReceptor = function(subarray, resourceName) {
+
+            if (!vm.sensorValues[subarray + '_allocations'])
+              return false;
+
+            var resources = vm.sensorValues[subarray + '_allocations'].parsedValue
+
+            // return true only if
+            // - the subarray is in 'error' state
+            // - all resources other than receptors are in 'activated' states
+            // - given resourceName is a receptor and is in 'error' state
+            if (!resourceName.startsWith('m0') && !resourceName.startsWith('s0'))
+              return false;
+
+            if (vm.sensorValues[subarray + '_state'].value != 'error')
+              return false;
+
+            var resourceStateSensor = vm.sensorValues[resourceName + '_state'];
+            if (resourceStateSensor) {
+                if (resourceStateSensor.value != 'error')
+                    return false;
+            }
+
+            for (var i=0; i<resources.length; i++) {
+              var resource = resources[i];
+              if (!resource[0].startsWith('m0') && !resource[0].startsWith('s0')) {
+                resourceStateSensor = vm.sensorValues[resource[0] + '_state'];
+                if (resourceStateSensor) {
+                    if (resourceStateSensor.value != 'activated')
+                        return false;
+                }
+              }
+            }
+
+            return true;
+        }
+
+        vm.getAllErroredReceptors = function(subarray) {
+
+            if (!vm.sensorValues[subarray + '_allocations'])
+              return '';
+
+            var resources = vm.sensorValues[subarray + '_allocations'].parsedValue
+
+            // return comma separated list of receptor names which are not in 'active' state if:
+            // - the subarray is in 'error' state
+            // - all resources other than receptors are in 'activated' states
+            if (vm.sensorValues[subarray + '_state'].value != 'error')
+              return '';
+
+            var existsErroredReceptors = [];
+            for (var i=0; i<resources.length; i++) {
+              var resource = resources[i];
+              resourceStateSensor = vm.sensorValues[resource[0] + '_state'];
+              if (!resourceStateSensor)
+                continue;
+
+              if (!resource[0].startsWith('m0') && !resource[0].startsWith('s0')) {
+                  if (resourceStateSensor.value != 'activated')
+                      return '';
+              } else {
+                  if (resourceStateSensor.value == 'error')
+                      existsErroredReceptors.push(resource[0]);
+              }
+            }
+
+            return existsErroredReceptors.join();
+        }
+
         vm.initSensors = function() {
             ConfigService.getSystemConfig()
                 .then(function(systemConfig) {
@@ -953,12 +1043,18 @@
                             systemConfig['katconn:resources'].single_ctl,
                             '^(' + systemConfig['katconn:resources'].single_ctl.replace(/,/g, '|') + ').state$', true)
                         .then(handleListSensorsResult, handleListSensorsError);
+                    // systemConfig['katconn:arrays'].ants example: m011,m022,s0003
+                    MonitorService.listSensorsHttp(
+                        systemConfig['katconn:arrays'].ants,
+                        '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').ridx_position$', true)
+                    .then(handleListSensorsResult, handleListSensorsError);
 
                     vm.sensorsRegex = [
                         vm.subarraySensorNames.join('|'),
                         vm.schedSensorNames.join('|'),
                         vm.katpoolSensorNames.join('|'),
-                        'state$'
+                        'state$',
+                        'ridx_position'
                     ].join('|');
                 });
             MonitorService.subscribe('portal.sched');
@@ -1017,6 +1113,8 @@
             var allocations = [];
             var assignedResources = [];
             var start_time = $rootScope.utcDateTime;
+            var compoundTag = null;
+
             if (sb) {
                 dryrun_link = ConfigService.GetKATTaskFileServerURL() + "/tailtask/" + sb.id_code + "/dryrun"
                 content = "Schedule block: " + sb.id_code + "\n\nDry run link: " + dryrun_link;

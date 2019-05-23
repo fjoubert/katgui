@@ -21,6 +21,7 @@
             vm.reportUserlogs = [];
             vm.andTagFiltering = false;
             vm.compound_tags = [];
+            vm.userlogId;
 
             if ($stateParams.filter) {
                 vm.searchInputText = $stateParams.filter;
@@ -160,6 +161,19 @@
             };
 
             vm.queryUserlogs = function () {
+                if (vm.userlogId) {
+                    $state.go('userlogs-report', {userlogId: vm.userlogId},
+                            { notify: false, reload: false, inherit: false });
+                    UserLogService.getUserLogById(vm.userlogId).then(function (result) {
+                        vm.reportUserlogs = [];
+                        if (result.data) {
+                            vm.reportUserlogs.push(
+                                UserLogService.populateUserlogTagsFromMap(result.data));
+                        }
+                    });
+                    return;
+                }
+
                 var filterTagsList = vm.filterTags.map(function (tag) {
                     return tag.id;
                 }).join(',');
@@ -169,7 +183,7 @@
                         tagIds: filterTagsList? filterTagsList : ',',
                         filter: vm.searchInputText,
                         matchAllTags: vm.andTagFiltering},
-                        { notify: false, reload: false });
+                        { notify: false, reload: false, inherit: false });
                 vm.reportUserlogs = [];
                 var query = "?";
                 query += "start_time=" + vm.startDatetimeReadable + "&";
@@ -202,7 +216,18 @@
 
             vm.afterInit = function() {
                 UserLogService.listTags().then(function () {
-                    if ($stateParams.tagIds) {
+                    if ($stateParams.userlogId) {
+                        vm.userlogId = Number($stateParams.userlogId);
+                        UserLogService.getUserLogById(vm.userlogId).then(function (result) {
+                            if (result.data) {
+                                vm.reportUserlogs.push(
+                                    UserLogService.populateUserlogTagsFromMap(result.data));
+                                vm.editUserLog(result.data);
+                            }
+                        });
+                        vm.getProgramNames();
+                        return;
+                    } else if ($stateParams.tagIds) {
                         var tagIdsList = $stateParams.tagIds.split(',');
                         vm.filterTags = UserLogService.tags.filter(function (tag) {
                             return tagIdsList.indexOf(tag.id.toString()) > -1;

@@ -18,6 +18,7 @@
         api.KATObsPortalURL = null;
         api.systemConfig = null;
         api.productConfig = null;
+        api.subBandConfig = null;
         api.aggregateSensorDetail = null;
         api.resourceGroups = ['Components', 'Proxies'];
         api.sensorGroups = {};
@@ -126,6 +127,25 @@
                     .then(function(result) {
                         api.productConfig = result.data;
                         deferred.resolve(api.productConfig);
+                    }, function(message) {
+                        $log.error(message);
+                        deferred.reject(message);
+                    });
+            }
+            return deferred.promise;
+        };
+
+        api.getSubBandConfig = function() {
+            var deferred = $q.defer();
+            if (api.subBandConfig) {
+                $timeout(function() {
+                    deferred.resolve(api.subBandConfig);
+                });
+            } else {
+                $http(createRequest('get', urlBase() + '/array-config/centre_frequencies'))
+                    .then(function(result) {
+                        api.subBandConfig = result.data;
+                        deferred.resolve(api.subBandConfig);
                     }, function(message) {
                         $log.error(message);
                         deferred.reject(message);

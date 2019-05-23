@@ -24,6 +24,10 @@
         vm.showValueTimestamp = false;
         vm.subscribedSensors = [];
         vm.selectedSensor = '';
+        vm.sensorStartDatetime = new Date(new Date().getTime() - (60000 * 60));
+        vm.sensorStartDate = moment.utc(vm.sensorStartDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
+        vm.sensorEndDatetime = new Date(new Date().getTime());
+        vm.sensorEndDate = moment.utc(vm.sensorEndDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
 
         if ($localStorage.currentSensorNameColumnWidth) {
             vm.currentSensorNameColumnWidth = $localStorage.currentSensorNameColumnWidth;
@@ -77,6 +81,36 @@
         vm.setSelectedSensor = function(sensor) {
             vm.selectedSensor = sensor;
         }
+
+        vm.navigateToSensorGraph = function() {
+            if (vm.selectedSensor) {
+                var intervalNum = 10
+                var intervalType = 'm'
+                var startTime = $rootScope.utcDateTime;
+                var sensor = vm.sensorValues[vm.selectedSensor]
+                if (sensor.type === 'float' || sensor.type === 'timestamp'
+                    || sensor.type === 'integer') {
+                    vm.searchDiscrete = false;
+                }
+                else {
+                    vm.searchDiscrete = true;
+                }
+                try {
+                    $state.go('sensor-graph',
+                    {
+                        startTime: vm.sensorStartDate,
+                        endTime: vm.sensorEndDate,
+                        sensors: sensor.original_name.replace(/\./g, '_').replace(/-/g, '_'),
+                        interval: intervalNum + ',' + intervalType,
+                        discrete: vm.searchDiscrete? 'discrete' : null});
+                }
+                catch (error) {
+                    NotifyService.showSimpleDialog('Error',
+                      'Unexpected error occurred (' + error
+                      + ') Please navigate manually to sensor graph ');
+                }
+            }
+        };
 
         vm.openUserLog = function() {
           UserLogService.listTags();
@@ -132,10 +166,14 @@
         };
 
         vm.menuItems = [
-          {
-            text:"Add user log...",
-            callback: vm.openUserLog
-          }
+            {
+              text:"Add user log...",
+              callback: vm.openUserLog
+            },
+            {
+              text:"Go to sensor graph...",
+              callback: vm.navigateToSensorGraph
+            }
         ];
 
         vm.saveLocalStorage = function() {

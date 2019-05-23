@@ -18,15 +18,10 @@
             ObsSchedService.loadLastKnownSubarrayConfig(vm.subarray.id);
         };
 
-        if (!$scope.$parent.vm.subarray) {
-            $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
-                vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
-                vm.initLastKnownConfig();
-            });
-        } else {
-            vm.subarray = $scope.$parent.vm.subarray;
+        $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
+            vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
             vm.initLastKnownConfig();
-        }
+        });
 
         vm.toggleSelectAllUnassignedResources = function () {
             var anySelected = _.any(vm.poolResourcesFree, function(resource) {
@@ -56,6 +51,10 @@
 
         vm.freeAssignedResource = function (resourceName) {
             ObsSchedService.unassignResourcesFromSubarray(vm.subarray.id, resourceName);
+        };
+
+        vm.reactivateReceptor = function (receptors) {
+            ObsSchedService.reactivateSubarrayReceptor(vm.subarray.id, receptors);
         };
 
         vm.openTemplateListDialog = function ($event) {
@@ -210,6 +209,10 @@
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
         });
+
+        vm.sensorClass = function(status) {
+            return status + '-sensor-list-item';
+        };
     }
 
 })();

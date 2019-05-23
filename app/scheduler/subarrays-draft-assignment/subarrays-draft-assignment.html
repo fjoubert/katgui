@@ -1,7 +1,10 @@
 <div flex layout="row" style="min-width: 1150px; min-height: 600px" ng-controller="SubArraysCtrl as vm"
     ng-mouseup="vm.dragSelect = false">
-    <div flex class="subarray-container" layout="column" style="padding-left: 8px" md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}">
-        <div layout="row" flex>
+
+    <div id='left-resize' class="subarray-container" layout="column" style="padding-left: 8px; width: 70%;"
+        md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}">
+
+        <div layout="row" id='top-div' style="height: calc(50% - 5px)">
             <div layout="column" flex>
                 <md-toolbar md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
                     ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z2" layout="row"
@@ -142,18 +145,23 @@
                 <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto"></md-icon>
             </md-button>
         </div>
-        <div layout="column" style="padding-right: 4px" class="md-whiteframe-z1">
+
+        <hr resizeabledivs="#top-div--#bottom-div" style="cursor: ns-resize; width: 100%; border-top: 5px solid #eeeeee; opacity: 0; margin: 0;">
+
+        <div layout="column" id='bottom-div' style="padding-right: 4px; height: calc(50% - 5px)" class="md-whiteframe-z1">
             <md-toolbar ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" style="margin-top: 8px; min-height: 60px" class="md-whiteframe-z2 md-toolbar-tools-medium">
                 <span md-ink-ripple flex title="Click to view scheduling details" ng-click="parent.vm.stateGo('scheduler.observations.detail')" style="margin-top: -20px">Observations</span>
                 <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'" class="list-subheader-title"
                     style="height: 32px; width: 100%"></div>
             </md-toolbar>
-            <div style="min-height: 350px; max-height: 350px; overflow: auto" ng-if="vm.subarray.mode !== 'auto'" layout="column" flex ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
-            <div style="min-height: 350px; max-height: 350px; overflow: auto" ng-if="vm.subarray.mode === 'auto'" layout="column" flex ng-include="'app/scheduler/templates/auto-schedule-list.html'"></div>
+            <div style="min-height: 350px; overflow: auto" ng-if="vm.subarray.mode !== 'auto'" layout="column" flex ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
+            <div style="min-height: 350px; overflow: auto" ng-if="vm.subarray.mode === 'auto'" layout="column" flex ng-include="'app/scheduler/templates/auto-schedule-list.html'"></div>
         </div>
     </div>
 
-    <div flex="30" layout="column" class="md-whiteframe-z2 unselectable" style="min-width: 440px; margin: 0 8px 8px 4px">
+    <hr resizeabledivs="#left-resize||#right-resize" style="cursor: ew-resize; height: 100%; border-right: 5px solid #eeeeee; opacity: 0; margin: 0 0 0 2px;">
+
+    <div id='right-resize' layout="column" class="md-whiteframe-z2 unselectable" style="margin: 0 8px 8px 4px; width: 30%;">
         <md-toolbar class="panel-toolbar-small md-whiteframe-z1">
             <md-tooltip md-visible="vm.showDeselectTooltip" md-direction="top" md-autohide="false">
                 [esc] to clear selection, [enter] to assign sb's

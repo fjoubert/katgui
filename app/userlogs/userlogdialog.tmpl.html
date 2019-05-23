@@ -1,8 +1,16 @@
 <md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1" style="min-width: 800px; min-height: 626px; overflow: visible"
            ng-click="showEndDatePicker = false; showDatePicker = false; toggleTags = false;">
-    <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
+    <md-toolbar class="md-toolbar-tools md-whiteframe-z1" layout="row" layout-align="space-between center">
         <span>{{editMode && log.id? 'User Log Editor (' + log.id + ')': editMode? 'New User Log': 'User Log Viewer (' + log.id + ')'}}</span>
+
+        <md-button class="inline-action-button" style="margin: 0"
+                  ng-click="copyUserLogURL(log.id)">
+            <md-tooltip>Copy User Log URL to clipboard</md-tooltip>
+            <span class="fa fa-link" style='font-size: 18px'></span>
+        </md-button>
+
     </md-toolbar>
+
     <md-dialog-content style="padding: 12px; min-height: 510px" md-theme="{{$root.themePrimaryButtons}}" layout="column">
         <div layout="row">
             <div layout="row" layout-align="start center" style="min-width: 180px; padding-top: 20px;">

@@ -441,31 +441,39 @@
                 kibanaUrl = [
                     "http://",
                     ConfigService.systemConfig.system.kibana_server,
-                    "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
-                    "time:(from:now-10m,mode:relative,to:now))&",
-                    "_a=(columns:!(programname,severity,message),",
-                    "filters:!(('$state':(store:appState),",
-                    "meta:(alias:!n,disabled:!f,index:'",
-                    $rootScope.systemConfig.system.sitename,
-                    "-*',key:programname,negate:!f,type:phrase,value:",
+                    "/app/logtrail#/?q=programname:",
                     programName,
-                    "),query:(match:(programname:(query:",
-                    programName,
-                    ",type:phrase))))),","index:'",
+                    "&h=All&t=Now&i=",
                     $rootScope.systemConfig.system.sitename,
-                    "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
+                    "-*&_g=()"].join("");
             } else {
                 kibanaUrl = [
                     "http://",
                     ConfigService.systemConfig.system.kibana_server,
-                    "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
-                    "time:(from:now-10m,mode:relative,to:now))&",
-                    "_a=(columns:!(programname,severity,message),index:'",
+                    "/app/logtrail#/?q=&h=All&t=Now&i=",
                     $rootScope.systemConfig.system.sitename,
-                    "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
-            }
+                    "-*&_g=()"].join("");
+           }
             window.open(kibanaUrl).focus();
         };
+
+        $rootScope.openLogtrailInNewTab = function(programName) {
+            var logtrailUrl;
+            if (programName) {
+                logtrailUrl = [
+                    "http://",
+                    ConfigService.systemConfig.system.kibana_server,
+                    "/app/logtrail#/?q=programname: kat.",
+                    programName,
+                    "&h=All&t=Now&i=",
+                    $rootScope.systemConfig.system.sitename,
+                    "-*&_g=()"].join("")
+                    window.open(logtrailUrl).focus();
+            }
+            else {
+                NotifyService.showSimpleDialog('Error opening logtrail', 'Unexpected error occurred');
+            }
+        }
 
         //todo material milestone v0.12 will have an option to not close menu when an item is clicked
         $rootScope.openMenu = function($mdOpenMenu, $event, menuContentId) {
@@ -820,10 +828,14 @@
             title: 'User Log Tag Management',
         });
         $stateProvider.state('userlog-reports', {
-            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}/{compoundTags}',
+            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}/{compoundTags}/{userlogId}',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
+                userlogId: {
+                    value: null,
+                    squash: true
+                },
                 startTime: {
                     value: null,
                     squash: true
@@ -852,10 +864,14 @@
             title: 'User Log Reports'
         });
         $stateProvider.state('userlogs-report', {
-            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags&compoundTags',
+            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags&compoundTags&userlogId',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
+                userlogId: {
+                    value: null,
+                    squash: true
+                },
                 startTime: {
                     value: null,
                     squash: true
