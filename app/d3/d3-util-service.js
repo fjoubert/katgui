@@ -79,7 +79,7 @@ angular.module('katGui.d3')
                     api.updateTooltipValues(d, tooltip, rootName);
                     tooltip.style("visibility", "visible");
                 }).on("mousemove", function (d) {
-                    api.updateTooltipValues(d, tooltip, rootName);
+                    var fullSensorName = api.updateTooltipValues(d, tooltip, rootName);
                     var uiViewDiv = document.querySelector('#ui-view-container-div');
                     var offset = d3.mouse(uiViewDiv);
                     var x = offset[0];
@@ -94,7 +94,11 @@ angular.module('katGui.d3')
                     tooltip
                         .style("top", (y + 15 + angular.element(uiViewDiv).scrollTop()) + "px")
                         .style("left", (x + 5 + angular.element(uiViewDiv).scrollLeft()) + "px");
+<<<<<<< HEAD
 
+=======
+                    tooltip.attr("sensor", fullSensorName);
+>>>>>>> e502a832... Merge pull request #518 from ska-sa/user/xinyuwu/MT-1037/add_userlog_context_menu_on_starburst_page
                 }).on("mouseout", function () {
                     tooltip.style("visibility", "hidden");
                 });
@@ -136,6 +140,8 @@ angular.module('katGui.d3')
                     "<div style='font-size: 14px'>Error Reading Sensor Value: "+fullSensorName+"</div>"
                 );
             }
+
+            return fullSensorName;
         };
 
         api.updateGraphTooltipValues = function (d, tooltip) {

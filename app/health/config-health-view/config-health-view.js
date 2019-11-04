@@ -55,6 +55,64 @@
             }
         };
 
+<<<<<<< HEAD
+=======
+        vm.openMenuItems = function($event) {
+            var sunburstScopeTooltip = angular.element($event.currentTarget)
+                                        .prop('sunburstScopeTooltip');
+            vm.sensor = sunburstScopeTooltip.attr("sensor");
+            vm.sensorValue = StatusService.sensorValues[vm.sensor];
+        }
+
+        vm.openUserLog = function() {
+            var content = '';
+            var endTime = '';
+            var compoundTags = [];
+            var startTime = $rootScope.utcDateTime;
+            var original_name = vm.sensorValue.original_name;
+
+            content = "Sensor: " + vm.sensor +
+            "\nDescription: " + vm.sensorValue.description +
+            "\nStatus: " + vm.sensorValue.status +
+            "\nValue: " + vm.sensorValue.value
+
+            if (original_name) {
+                var compoundTag = $rootScope.deriveCompoundTag(original_name)
+                if (compoundTag) {
+                    compoundTags.push(compoundTag)
+                }
+            } else {
+                deviceName = fullSensorName.split(/_(.+)/)[0]
+                sensorName = fullSensorName.split(/_(.+)/)[1]
+                if (deviceName && sensorName) {
+                    fullSensorName = deviceName.concat('.', sensorName)
+                }
+                compoundTag = $rootScope.deriveCompoundTag(fullSensorName)
+                if (compoundTag) {
+                    compoundTags.push(compoundTag)
+                }
+            }
+
+            var newUserLog = {
+                start_time: startTime,
+                end_time: endTime,
+                tags: [],
+                compound_tags: compoundTags,
+                user_id: $rootScope.currentUser.id,
+                content: content,
+                attachments: []
+            };
+            $rootScope.editUserLog(newUserLog, event);
+          };
+
+        vm.menuItems = [
+            {
+              text:"Add user log...",
+              callback: vm.openUserLog
+            },
+        ];
+
+>>>>>>> e502a832... Merge pull request #518 from ska-sa/user/xinyuwu/MT-1037/add_userlog_context_menu_on_starburst_page
         vm.chartSizeChanged = function() {
             $localStorage['configHealthDisplaySize'] = JSON.stringify(vm.treeChartSize);
             vm.redrawCharts();

@@ -58,7 +58,18 @@
             <receptor-health-pack-map class="treemap-container" size-storage-key="configHealthDisplaySize" receptor="item" ng-switch-when="Pack"></receptor-health-pack-map>
             <receptor-health-partition-map class="treemap-container" size-storage-key="configHealthDisplaySize" receptor="item" ng-switch-when="Partition"></receptor-health-partition-map>
             <receptor-health-icicle-map class="treemap-container" size-storage-key="configHealthDisplaySize" receptor="item" ng-switch-when="Icicle"></receptor-health-icicle-map>
+<<<<<<< HEAD
             <receptor-health-sunburst-map class="treemap-container" size-storage-key="configHealthDisplaySize" receptor="item" ng-switch-when="Sunburst"></receptor-health-sunburst-map>
+=======
+            <receptor-health-sunburst-map class="treemap-container"
+              ng-class="{'hide-menu': !vm.sensorValue}"
+              size-storage-key="configHealthDisplaySize"
+              receptor="item"
+              ng-right-click="vm.openMenuItems($event)"
+              menu-items="vm.menuItems"
+              ng-switch-when="Sunburst">
+            </receptor-health-sunburst-map>
+>>>>>>> e502a832... Merge pull request #518 from ska-sa/user/xinyuwu/MT-1037/add_userlog_context_menu_on_starburst_page
         </div>
 
     </div>

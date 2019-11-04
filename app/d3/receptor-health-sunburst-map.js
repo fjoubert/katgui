@@ -8,9 +8,11 @@ angular.module('katGui.d3')
                 sizeStorageKey: '@'
             },
             link: function (scope, element) {
-
                 var node, root, transitionDuration = 250;
                 var tooltip = d3.select(angular.element(document.querySelector('.treemap-tooltip'))[0]), containerSvg;
+
+                element.prop('sunburstScopeTooltip', tooltip);
+
                 //create our maplayout for the data and sort it alphabetically
                 //the bockvalue is the relative size of each child element, it is
                 //set to a static 100 when we get our monitor data in the StatusService
