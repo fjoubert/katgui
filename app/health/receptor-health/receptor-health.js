@@ -28,6 +28,59 @@
             vm.mapType = 'Sunburst';
         }
 
+        vm.openMenuItems = function($event) {
+            var sunburstScopeTooltip = angular.element($event.currentTarget)
+                                        .prop('sunburstScopeTooltip');
+            vm.sensor = sunburstScopeTooltip.attr("sensor");
+            vm.sensorValue = StatusService.sensorValues[vm.sensor];
+        }
+
+        vm.openUserLog = function() {
+            var content = '';
+            var endTime = '';
+            var compoundTags = [];
+            var startTime = $rootScope.utcDateTime;
+
+            content = "Sensor: " + vm.sensor +
+            "\nStatus: " + vm.sensorValue.status +
+            "\nValue: " + vm.sensorValue.value
+
+            if (vm.sensorValue) {
+                sensorArray = []
+                componentName = vm.sensor.split(/_(.+)/)[0]
+                deviceName = vm.sensor.split(/_(.+)/)[1].split(/_(.+)/)[0]
+                sensorName = vm.sensor.split(/_(.+)/)[1].split(/_(.+)/)[1]
+                sensorArray.push(componentName)
+                sensorArray.push(deviceName)
+                sensorArray.push(sensorName)
+                if (componentName && deviceName && sensorName) {
+                    var fullSensorName = sensorArray.join('.')
+                }
+                compoundTag = $rootScope.deriveCompoundTag(fullSensorName)
+                if (compoundTag) {
+                    compoundTags.push(compoundTag)
+                }
+            }
+
+            var newUserLog = {
+                start_time: startTime,
+                end_time: endTime,
+                tags: [],
+                compound_tags: compoundTags,
+                user_id: $rootScope.currentUser.id,
+                content: content,
+                attachments: []
+            };
+            $rootScope.editUserLog(newUserLog, event);
+        };
+
+        vm.menuItems = [
+            {
+              text:"Add user log...",
+              callback: vm.openUserLog
+            },
+        ];
+
         vm.populateTree = function (parent, receptor) {
             if (parent.prefix) {
                 StatusService.receptorAggSensors[parent.sensor] = 1;

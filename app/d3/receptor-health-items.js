@@ -9,7 +9,7 @@ angular.module('katGui.d3')
                     '<receptor-health-pack-map class="treemap-container" receptor="receptor" ng-switch-when="Pack"></receptor-health-pack-map>',
                     '<receptor-health-partition-map class="treemap-container" receptor="receptor" ng-switch-when="Partition"></receptor-health-partition-map>',
                     '<receptor-health-icicle-map class="treemap-container" receptor="receptor" ng-switch-when="Icicle"></receptor-health-icicle-map>',
-                    '<receptor-health-sunburst-map class="treemap-container" receptor="receptor" ng-switch-when="Sunburst"></receptor-health-sunburst-map>',
+                    '<receptor-health-sunburst-map class="treemap-container" receptor="receptor" ng-right-click="vm.openMenuItems($event)" menu-items = "vm.menuItems" ng-class="{\'hide-menu\': !vm.sensorValue}" ng-switch-when="Sunburst"></receptor-health-sunburst-map>',
                 '</div>'
             ].join(''),
             link: function (scope) {
