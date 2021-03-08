@@ -317,6 +317,24 @@
                 vm.exportingPdf = false;
             };
 
+            // vm.exportExcel = function(){
+            //     vm.exportingExcel = true;
+            //     var wb = XLSX.utils.book_new();
+            //     wb.Props = {
+            //             Title: "SheetJS Tutorial",
+            //             Subject: "Test",
+            //             Author: "Red Stapler",
+            //             CreatedDate: new Date(2017,12,19)
+            //     };
+                
+            //     wb.SheetNames.push("Test Sheet");
+            //     // var get_report = vm.createReport();
+            //     // XLSX.utils.table_to_book(get_report, {sheet:"Test Sheet"});
+            //     XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+            //     XLSX.writeFile(wb, ('SheetJSTableExport.' +  ('xlsx')));
+            //     vm.exportingExcel = false;
+            // };
+
             vm.createReport = function () {
                 vm.clearReportsData();
                 $state.go('utilisation-report', {
