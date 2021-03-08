@@ -39,9 +39,9 @@
                 <md-button ng-disabled="vm.receptorReportResults.length === 0 || vm.exportingPdf || vm.creatingSubarrayReport || vm.creatingReceptorReport || vm.creatingScheduleReport" class="add-tab md-primary md-raised"
                     ng-click="vm.exportPdf()" style="margin-right: 0;">{{vm.exportingPdf? 'Exporting PDF...' : 'Export as PDF'}}
                 </md-button>
-                <!-- <md-button ng-disabled="vm.receptorReportResults.length === 0 || vm.exportingExcel || vm.creatingSubarrayReport || vm.creatingReceptorReport || vm.creatingScheduleReport" class="add-tab md-primary md-raised"
+                <md-button ng-disabled="vm.receptorReportResults.length === 0 || vm.exportingExcel || vm.creatingSubarrayReport || vm.creatingReceptorReport || vm.creatingScheduleReport" class="add-tab md-primary md-raised"
                     ng-click="vm.exportExcel()" style="margin-right: 0;">{{vm.exportingExcel? 'Exporting Excel...' : 'Export as Excel'}}
-                </md-button> -->
+                </md-button>
             </div>
         </div>
     </md-toolbar>

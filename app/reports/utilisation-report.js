@@ -317,23 +317,38 @@
                 vm.exportingPdf = false;
             };
 
-            // vm.exportExcel = function(){
-            //     vm.exportingExcel = true;
-            //     var wb = XLSX.utils.book_new();
-            //     wb.Props = {
-            //             Title: "SheetJS Tutorial",
-            //             Subject: "Test",
-            //             Author: "Red Stapler",
-            //             CreatedDate: new Date(2017,12,19)
-            //     };
+            vm.exportExcel = function(){
+                vm.exportingExcel = true;
+                /* starting from this data */
+                var data = [
+                    { name: "Barack Obama", pres: 44 },
+                    { name: "Donald Trump", pres: 45 }
+                ];
+                var get_report = vm.createReport();
+                /* generate a worksheet */
+                var ws = XLSX.utils.json_to_sheet(get_report);
                 
-            //     wb.SheetNames.push("Test Sheet");
-            //     // var get_report = vm.createReport();
-            //     // XLSX.utils.table_to_book(get_report, {sheet:"Test Sheet"});
-            //     XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
-            //     XLSX.writeFile(wb, ('SheetJSTableExport.' +  ('xlsx')));
-            //     vm.exportingExcel = false;
-            // };
+                /* add to workbook */
+                var wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Presidents");
+                
+                /* write workbook and force a download */
+                XLSX.writeFile(wb, "sheetjs.xlsx");
+                // var wb = XLSX.utils.book_new();
+                // wb.Props = {
+                //         Title: "SheetJS Tutorial",
+                //         Subject: "Test",
+                //         Author: "Red Stapler",
+                //         CreatedDate: new Date(2017,12,19)
+                // };
+                
+                // wb.SheetNames.push("Test Sheet");
+                // var ws_data = [['hello' , 'world']];
+                // XLSX.utils.table_to_book(ws_data, {sheet:"Test Sheet"});
+                // XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+                // XLSX.writeFile(wb, ('SheetJSTableExport.' +  ('xlsx')));
+                vm.exportingExcel = false;
+            };
 
             vm.createReport = function () {
                 vm.clearReportsData();
