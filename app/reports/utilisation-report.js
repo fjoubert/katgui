@@ -319,35 +319,181 @@
 
             vm.exportExcel = function(){
                 vm.exportingExcel = true;
-                /* starting from this data */
-                var data = [
-                    { name: "Barack Obama", pres: 44 },
-                    { name: "Donald Trump", pres: 45 }
+                // Scheduler Mode
+                var schedMode = ["Subarray", "1", "2", "3", "4", "5", "6", "7"];
+                var schedulerModeRows = [schedMode];
+                var schedModeKeys = Object.keys(vm.schedModeDurations);
+                schedModeKeys.forEach(function (key) {
+                    var newSchedModeRow = [key];
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        var numEntries = Object.entries(vm.schedModeDurations[key][subNr]).length;
+                        var schedModeTot = "";
+                        if (numEntries != 0) {
+                            schedModeTot = vm.schedModeDurations[key][subNr].percentageOfTotal;
+                        }
+                        newSchedModeRow.push(schedModeTot);
+                    });
+                    schedulerModeRows.push(newSchedModeRow);
+                });
+
+                // Subarray
+                var subarraysRows = [["", "1", "2", "3", "4", "5", "6", "7"]];
+
+                // maintenance
+                var inMaintenanceRowNames = ["Maintenance"];
+                var inMaintenanceRows = [inMaintenanceRowNames];
+                var inMaintannceDuration = [""];
+                vm.subarrayNrs.forEach(function (subNr) {
+                    var percentageStr = vm.subarrayMaintenanceDurations[subNr].percentageOfTotal || "";
+                    var durationStr = "";
+                    if (vm.subarrayMaintenanceDurations[subNr].duration) {
+                        durationStr = " (" + (vm.subarrayMaintenanceDurations[subNr].duration || "") + ")";
+                    }
+                    inMaintannceDuration.push(percentageStr + durationStr);
+                    if (inMaintannceDuration.length == vm.subarrayNrs.length){
+                        inMaintenanceRows.push(inMaintannceDuration);
+                    }
+                });
+                // -------------------------------------------------------
+                // states
+                var subarrayStateKeys = Object.keys(vm.subarrayStateDurations);
+                var statesRows = [];
+                subarrayStateKeys.forEach(function (key) {
+                    var newSubarrayStateRow = [key || "None"];
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newSubarrayStateRow.push(vm.subarrayStateDurations[key][subNr].percentageOfTotal || "");
+                    });
+                    statesRows.push(newSubarrayStateRow);
+                });
+
+                // -------------------------------------------------------
+                // bands
+                var subarrayBandKeys = Object.keys(vm.subarrayBandDurations);
+                var bandsRows = [];
+                subarrayBandKeys.forEach(function (key) {
+                    var newSubarrayBandRow = [key || "None"];
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newSubarrayBandRow.push(vm.subarrayBandDurations[key][subNr].percentageOfTotal || "");
+                    });
+                    bandsRows.push(newSubarrayBandRow);
+                });
+
+                // -------------------------------------------------------
+                // product
+                var subarrayProductKeys = Object.keys(vm.subarrayProductDurations);
+                var productRows = [];
+                subarrayProductKeys.forEach(function (key) {
+                    var newSubarrayProductRow = [key || "None"];
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newSubarrayProductRow.push(vm.subarrayProductDurations[key][subNr].percentageOfTotal || "");
+                    });
+                    productRows.push(newSubarrayProductRow);
+                });
+
+                // Resource Utilisation
+                var resourceUtilisationRowNames = ["", "Total Duration", "Total %", "1", "2", "3", "4", "5", "6", "7", "faulty", "in maintenance"];
+                var resourceUtilisationRows = [resourceUtilisationRowNames];
+
+                var poolResourcesKeys = Object.keys(vm.poolResourcesAssignedDurations).sort();
+                poolResourcesKeys.forEach(function (key) {
+                    var newPoolResourcesRow = [];
+                    var durationTotal = vm.poolResourcesAssignedDurations[key].durationTotal || "";
+                    var percentageTotal = vm.poolResourcesAssignedDurations[key].percentageTotal || "";
+                    var faulty = vm.poolResourcesAssignedDurations[key].faulty.percentageOfTotal || "";
+                    var inMaintenance = vm.poolResourcesAssignedDurations[key].in_maintenance.percentageOfTotal || "";
+                    newPoolResourcesRow.push(key, durationTotal, percentageTotal);
+
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newPoolResourcesRow.push(vm.poolResourcesAssignedDurations[key][subNr].percentageOfTotal || "");
+                    });
+                    newPoolResourcesRow.push(faulty, inMaintenance);
+
+                    resourceUtilisationRows.push(newPoolResourcesRow);
+                });
+
+                // System State
+                var SystemStateRows = [];
+                var systemStateColumns = "Interlock State";
+
+                Object.keys(vm.interlockReceptorReportResults).forEach(function (key) {
+                    if (!_.find(systemStateColumns, key)) {
+                        systemStateColumns = [systemStateColumns, key];
+                    }
+                    var percentageRow = ["Percentage: ", vm.interlockReceptorReportResults[key].percentageOfTotal];
+                    var durationRow = ["Duration: ", vm.interlockReceptorReportResults[key].duration];
+                    SystemStateRows.push(systemStateColumns, percentageRow, durationRow);
+                });
+
+                // Active Schedule Block Details
+                var totalSBDurationRow = [
+                    ["Total Duration of All Active Schedule Blocks", vm.totalSBDuration]
                 ];
-                var get_report = vm.createReport();
-                /* generate a worksheet */
-                var ws = XLSX.utils.json_to_sheet(get_report);
-                
-                /* add to workbook */
+                var SBDetailsColumns = ["Id Code", "Proposal Id", "Owner", "Description", "Subarray", "State", "Outcome", "Duration", "% of Total", "No. of Ants"];
+                var ActiveSchedBlockRows = [SBDetailsColumns];
+                vm.SBDetails.forEach(function (obs) {
+                    var idCode = obs.id_code || "";
+                    var proposalID = obs.proposal_id || "";
+                    var owner = obs.owner || "";
+                    var description = obs.description || "";
+                    var subarray = obs.sub_nr || "";
+                    var state = obs.state || "";
+                    var outcome = obs.outcome || "";
+                    var duration = obs.duration || "";
+                    var percentageTotal = obs.percentageOfTotal || "";
+                    var noAnts = obs.n_ants || "";
+                    var schedDetails = [];
+                    schedDetails.push(idCode,proposalID, owner, description, subarray,state, outcome, duration, percentageTotal, noAnts);
+                    ActiveSchedBlockRows.push(schedDetails);
+                });
+
+                // -----------------------ADD HEADERS-----------------------------------------------
+                var schedModeHeader = ["Scheduler Mode"];
+                schedulerModeRows.splice(0,0, schedModeHeader);
+
+                var subarraysHeader = ["Subarray"];
+                subarraysRows.splice(0, 0, subarraysHeader);
+
+                var stateHeader = ["State"];
+                statesRows.splice(0, 0, stateHeader);
+
+                var bandsHeader = ["Band"];
+                bandsRows.splice(0, 0, bandsHeader);
+
+                var productHeader = ["Product"];
+                productRows.splice(0, 0, productHeader);
+
+                var resourceUtilisationHeader = ["Resource Utilisation"];
+                resourceUtilisationRows.splice(0,0, resourceUtilisationHeader);
+
+                var SystemStateHeader = ["System State"];
+                SystemStateRows.splice(0, 0, SystemStateHeader);
+
+                var SBDetailsHeader = ["Active Schedule Block Details"];
+                totalSBDurationRow.splice(0, 0, SBDetailsHeader);
+
+                // -------------------------ADD NEW LINE ---------------------------------------------
+                var NewLine = [];
+                schedulerModeRows.push(NewLine);
+                subarraysRows.push(NewLine);
+                inMaintenanceRows.push(NewLine);
+                statesRows.push(NewLine);
+                bandsRows.push(NewLine);
+                productRows.push(NewLine);
+                resourceUtilisationRows.push(NewLine);
+                SystemStateRows.push(NewLine);
+                totalSBDurationRow.push(NewLine);
+                ActiveSchedBlockRows.push(NewLine);
+
+                var data = schedulerModeRows.concat(
+                    subarraysRows, inMaintenanceRows, statesRows, bandsRows, productRows,
+                    resourceUtilisationRows, SystemStateRows, totalSBDurationRow, ActiveSchedBlockRows
+                    );
+
+                // Download the sheet
+                var ws = XLSX.utils.aoa_to_sheet(data);
                 var wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Presidents");
-                
-                /* write workbook and force a download */
-                XLSX.writeFile(wb, "sheetjs.xlsx");
-                // var wb = XLSX.utils.book_new();
-                // wb.Props = {
-                //         Title: "SheetJS Tutorial",
-                //         Subject: "Test",
-                //         Author: "Red Stapler",
-                //         CreatedDate: new Date(2017,12,19)
-                // };
-                
-                // wb.SheetNames.push("Test Sheet");
-                // var ws_data = [['hello' , 'world']];
-                // XLSX.utils.table_to_book(ws_data, {sheet:"Test Sheet"});
-                // XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
-                // XLSX.writeFile(wb, ('SheetJSTableExport.' +  ('xlsx')));
-                vm.exportingExcel = false;
+                XLSX.writeFile(wb, "sheetjs.xlsx");               vm.exportingExcel = false;
             };
 
             vm.createReport = function () {
