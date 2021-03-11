@@ -490,10 +490,11 @@
                     );
 
                 // Download the sheet
-                var ws = XLSX.utils.aoa_to_sheet(data);
+                var ws = XLSX.utils.aoa_to_sheet(data, {raw: true});
                 var wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Utilization-report");
-                XLSX.writeFile(wb, "Utilization-report.xlsx");               vm.exportingExcel = false;
+                XLSX.writeFile(wb, "Utilization-report.xlsx");
+                vm.exportingExcel = false;
             };
 
             vm.createReport = function () {
