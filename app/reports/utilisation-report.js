@@ -492,8 +492,8 @@
                 // Download the sheet
                 var ws = XLSX.utils.aoa_to_sheet(data);
                 var wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Presidents");
-                XLSX.writeFile(wb, "sheetjs.xlsx");               vm.exportingExcel = false;
+                XLSX.utils.book_append_sheet(wb, ws, "Utilization-report");
+                XLSX.writeFile(wb, "Utilization-report.xlsx");               vm.exportingExcel = false;
             };
 
             vm.createReport = function () {
