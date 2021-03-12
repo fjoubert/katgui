@@ -410,7 +410,7 @@
                 });
 
                 // System State
-                var SystemStateRows = [];
+                var systemStateRows = [];
                 var systemStateColumns = "Interlock State";
 
                 Object.keys(vm.interlockReceptorReportResults).forEach(function (key) {
@@ -419,15 +419,26 @@
                     }
                     var percentageRow = ["Percentage: ", vm.interlockReceptorReportResults[key].percentageOfTotal];
                     var durationRow = ["Duration: ", vm.interlockReceptorReportResults[key].duration];
-                    SystemStateRows.push(systemStateColumns, percentageRow, durationRow);
+                    systemStateRows.push(systemStateColumns, percentageRow, durationRow);
                 });
 
                 // Active Schedule Block Details
                 var totalSBDurationRow = [
                     ["Total Duration of All Active Schedule Blocks", vm.totalSBDuration]
                 ];
-                var SBDetailsColumns = ["Id Code", "Proposal Id", "Owner", "Description", "Subarray", "State", "Outcome", "Duration", "% of Total", "No. of Ants"];
-                var ActiveSchedBlockRows = [SBDetailsColumns];
+                var SBDetailsColumns = [
+                    "Id Code",
+                    "Proposal Id",
+                    "Owner",
+                    "Description",
+                    "Subarray",
+                    "State",
+                    "Outcome",
+                    "Duration",
+                    "% of Total",
+                    "No. of Ants"
+                ];
+                var activeSchedBlockRows = [SBDetailsColumns];
                 vm.SBDetails.forEach(function (obs) {
                     var idCode = obs.id_code || "";
                     var proposalID = obs.proposal_id || "";
@@ -441,7 +452,7 @@
                     var noAnts = obs.n_ants || "";
                     var schedDetails = [];
                     schedDetails.push(idCode,proposalID, owner, description, subarray,state, outcome, duration, percentageTotal, noAnts);
-                    ActiveSchedBlockRows.push(schedDetails);
+                    activeSchedBlockRows.push(schedDetails);
                 });
 
                 // -----------------------ADD HEADERS-----------------------------------------------
@@ -463,8 +474,8 @@
                 var resourceUtilisationHeader = ["Resource Utilisation"];
                 resourceUtilisationRows.splice(0,0, resourceUtilisationHeader);
 
-                var SystemStateHeader = ["System State"];
-                SystemStateRows.splice(0, 0, SystemStateHeader);
+                var systemStateHeader = ["System State"];
+                systemStateRows.splice(0, 0, systemStateHeader);
 
                 var SBDetailsHeader = ["Active Schedule Block Details"];
                 totalSBDurationRow.splice(0, 0, SBDetailsHeader);
@@ -478,13 +489,13 @@
                 bandsRows.push(NewLine);
                 productRows.push(NewLine);
                 resourceUtilisationRows.push(NewLine);
-                SystemStateRows.push(NewLine);
+                systemStateRows.push(NewLine);
                 totalSBDurationRow.push(NewLine);
-                ActiveSchedBlockRows.push(NewLine);
+                activeSchedBlockRows.push(NewLine);
 
                 var data = schedulerModeRows.concat(
                     subarraysRows, inMaintenanceRows, statesRows, bandsRows, productRows,
-                    resourceUtilisationRows, SystemStateRows, totalSBDurationRow, ActiveSchedBlockRows
+                    resourceUtilisationRows, systemStateRows, totalSBDurationRow, activeSchedBlockRows
                     );
 
                 // Download the sheet
