@@ -317,10 +317,10 @@
                 vm.exportingPdf = false;
             };
 
-            vm.exportExcel = function(){
-                vm.exportingExcel = true;
+            vm.exportSpreadSheet = function(){
+                vm.exportingSpreadSheet = true;
                 // Scheduler Mode
-                var schedMode = ["Subarray", "1", "2", "3", "4", "5", "6", "7"];
+                var schedMode = ['Subarray'].concat(vm.subarrayNrs);
                 var schedulerModeRows = [schedMode];
                 var schedModeKeys = Object.keys(vm.schedModeDurations);
                 schedModeKeys.forEach(function (key) {
@@ -337,24 +337,23 @@
                 });
 
                 // Subarray
-                var subarraysRows = [["", "1", "2", "3", "4", "5", "6", "7"]];
+                var subarraysRows = [[''].concat(vm.subarrayNrs)];
 
                 // maintenance
                 var inMaintenanceRowNames = ["Maintenance"];
                 var inMaintenanceRows = [inMaintenanceRowNames];
-                var inMaintannceDuration = [""];
+                var inMaintenanceDuration = [""];
                 vm.subarrayNrs.forEach(function (subNr) {
                     var percentageStr = vm.subarrayMaintenanceDurations[subNr].percentageOfTotal || "";
                     var durationStr = "";
                     if (vm.subarrayMaintenanceDurations[subNr].duration) {
                         durationStr = " (" + (vm.subarrayMaintenanceDurations[subNr].duration || "") + ")";
                     }
-                    inMaintannceDuration.push(percentageStr + durationStr);
-                    if (inMaintannceDuration.length == vm.subarrayNrs.length){
-                        inMaintenanceRows.push(inMaintannceDuration);
+                    inMaintenanceDuration.push(percentageStr + durationStr);
+                    if (inMaintenanceDuration.length == vm.subarrayNrs.length){
+                        inMaintenanceRows.push(inMaintenanceDuration);
                     }
                 });
-                // -------------------------------------------------------
                 // states
                 var subarrayStateKeys = Object.keys(vm.subarrayStateDurations);
                 var statesRows = [];
@@ -366,7 +365,6 @@
                     statesRows.push(newSubarrayStateRow);
                 });
 
-                // -------------------------------------------------------
                 // bands
                 var subarrayBandKeys = Object.keys(vm.subarrayBandDurations);
                 var bandsRows = [];
@@ -378,7 +376,6 @@
                     bandsRows.push(newSubarrayBandRow);
                 });
 
-                // -------------------------------------------------------
                 // product
                 var subarrayProductKeys = Object.keys(vm.subarrayProductDurations);
                 var productRows = [];
@@ -391,7 +388,8 @@
                 });
 
                 // Resource Utilisation
-                var resourceUtilisationRowNames = ["", "Total Duration", "Total %", "1", "2", "3", "4", "5", "6", "7", "faulty", "in maintenance"];
+                var resourceUtilisationRowNames = ["", "Total Duration", "Total %"].concat(vm.subarrayNrs);
+                resourceUtilisationRowNames.push("faulty", "in maintenance");
                 var resourceUtilisationRows = [resourceUtilisationRowNames];
 
                 var poolResourcesKeys = Object.keys(vm.poolResourcesAssignedDurations).sort();
@@ -493,8 +491,8 @@
                 var ws = XLSX.utils.aoa_to_sheet(data, {raw: true});
                 var wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Utilization-report");
-                XLSX.writeFile(wb, "Utilization-report.xlsx");
-                vm.exportingExcel = false;
+                XLSX.writeFile(wb, "Utilization-report.csv");
+                vm.exportingSpreadSheet = false;
             };
 
             vm.createReport = function () {
