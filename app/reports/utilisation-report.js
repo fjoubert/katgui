@@ -317,6 +317,195 @@
                 vm.exportingPdf = false;
             };
 
+            vm.exportSpreadSheet = function(){
+                vm.exportingSpreadSheet = true;
+                // Scheduler Mode
+                var schedMode = ['Subarray'].concat(vm.subarrayNrs);
+                var schedulerModeRows = [schedMode];
+                var schedModeKeys = Object.keys(vm.schedModeDurations);
+                schedModeKeys.forEach(function (key) {
+                    var newSchedModeRow = [key];
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        var numEntries = Object.entries(vm.schedModeDurations[key][subNr]).length;
+                        var schedModeTot = "";
+                        if (numEntries != 0) {
+                            schedModeTot = vm.schedModeDurations[key][subNr].percentageOfTotal;
+                        }
+                        newSchedModeRow.push(schedModeTot);
+                    });
+                    schedulerModeRows.push(newSchedModeRow);
+                });
+
+                // Subarray
+                var subarraysRows = [[''].concat(vm.subarrayNrs)];
+
+                // maintenance
+                var inMaintenanceRowNames = ["Maintenance"];
+                var inMaintenanceRows = [inMaintenanceRowNames];
+                var inMaintenanceDuration = [""];
+                vm.subarrayNrs.forEach(function (subNr) {
+                    var percentageStr = vm.subarrayMaintenanceDurations[subNr].percentageOfTotal || "";
+                    var durationStr = "";
+                    if (vm.subarrayMaintenanceDurations[subNr].duration) {
+                        durationStr = " (" + (vm.subarrayMaintenanceDurations[subNr].duration || "") + ")";
+                    }
+                    inMaintenanceDuration.push(percentageStr + durationStr);
+                    if (inMaintenanceDuration.length == vm.subarrayNrs.length){
+                        inMaintenanceRows.push(inMaintenanceDuration);
+                    }
+                });
+                // states
+                var subarrayStateKeys = Object.keys(vm.subarrayStateDurations);
+                var statesRows = [];
+                subarrayStateKeys.forEach(function (key) {
+                    var newSubarrayStateRow = [key || "None"];
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newSubarrayStateRow.push(vm.subarrayStateDurations[key][subNr].percentageOfTotal || "");
+                    });
+                    statesRows.push(newSubarrayStateRow);
+                });
+
+                // bands
+                var subarrayBandKeys = Object.keys(vm.subarrayBandDurations);
+                var bandsRows = [];
+                subarrayBandKeys.forEach(function (key) {
+                    var newSubarrayBandRow = [key || "None"];
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newSubarrayBandRow.push(vm.subarrayBandDurations[key][subNr].percentageOfTotal || "");
+                    });
+                    bandsRows.push(newSubarrayBandRow);
+                });
+
+                // product
+                var subarrayProductKeys = Object.keys(vm.subarrayProductDurations);
+                var productRows = [];
+                subarrayProductKeys.forEach(function (key) {
+                    var newSubarrayProductRow = [key || "None"];
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newSubarrayProductRow.push(vm.subarrayProductDurations[key][subNr].percentageOfTotal || "");
+                    });
+                    productRows.push(newSubarrayProductRow);
+                });
+
+                // Resource Utilisation
+                var resourceUtilisationRowNames = ["", "Total Duration", "Total %"].concat(vm.subarrayNrs);
+                resourceUtilisationRowNames.push("faulty", "in maintenance");
+                var resourceUtilisationRows = [resourceUtilisationRowNames];
+
+                var poolResourcesKeys = Object.keys(vm.poolResourcesAssignedDurations).sort();
+                poolResourcesKeys.forEach(function (key) {
+                    var newPoolResourcesRow = [];
+                    var durationTotal = vm.poolResourcesAssignedDurations[key].durationTotal || "";
+                    var percentageTotal = vm.poolResourcesAssignedDurations[key].percentageTotal || "";
+                    var faulty = vm.poolResourcesAssignedDurations[key].faulty.percentageOfTotal || "";
+                    var inMaintenance = vm.poolResourcesAssignedDurations[key].in_maintenance.percentageOfTotal || "";
+                    newPoolResourcesRow.push(key, durationTotal, percentageTotal);
+
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newPoolResourcesRow.push(vm.poolResourcesAssignedDurations[key][subNr].percentageOfTotal || "");
+                    });
+                    newPoolResourcesRow.push(faulty, inMaintenance);
+
+                    resourceUtilisationRows.push(newPoolResourcesRow);
+                });
+
+                // System State
+                var systemStateRows = [];
+                var systemStateColumns = "Interlock State";
+
+                Object.keys(vm.interlockReceptorReportResults).forEach(function (key) {
+                    if (!_.find(systemStateColumns, key)) {
+                        systemStateColumns = [systemStateColumns, key];
+                    }
+                    var percentageRow = ["Percentage: ", vm.interlockReceptorReportResults[key].percentageOfTotal];
+                    var durationRow = ["Duration: ", vm.interlockReceptorReportResults[key].duration];
+                    systemStateRows.push(systemStateColumns, percentageRow, durationRow);
+                });
+
+                // Active Schedule Block Details
+                var totalSBDurationRow = [
+                    ["Total Duration of All Active Schedule Blocks", vm.totalSBDuration]
+                ];
+                var SBDetailsColumns = [
+                    "Id Code",
+                    "Proposal Id",
+                    "Owner",
+                    "Description",
+                    "Subarray",
+                    "State",
+                    "Outcome",
+                    "Duration",
+                    "% of Total",
+                    "No. of Ants"
+                ];
+                var activeSchedBlockRows = [SBDetailsColumns];
+                vm.SBDetails.forEach(function (obs) {
+                    var idCode = obs.id_code || "";
+                    var proposalID = obs.proposal_id || "";
+                    var owner = obs.owner || "";
+                    var description = obs.description || "";
+                    var subarray = obs.sub_nr || "";
+                    var state = obs.state || "";
+                    var outcome = obs.outcome || "";
+                    var duration = obs.duration || "";
+                    var percentageTotal = obs.percentageOfTotal || "";
+                    var noAnts = obs.n_ants || "";
+                    var schedDetails = [];
+                    schedDetails.push(idCode,proposalID, owner, description, subarray,state, outcome, duration, percentageTotal, noAnts);
+                    activeSchedBlockRows.push(schedDetails);
+                });
+
+                // -----------------------ADD HEADERS-----------------------------------------------
+                var schedModeHeader = ["Scheduler Mode"];
+                schedulerModeRows.splice(0,0, schedModeHeader);
+
+                var subarraysHeader = ["Subarray"];
+                subarraysRows.splice(0, 0, subarraysHeader);
+
+                var stateHeader = ["State"];
+                statesRows.splice(0, 0, stateHeader);
+
+                var bandsHeader = ["Band"];
+                bandsRows.splice(0, 0, bandsHeader);
+
+                var productHeader = ["Product"];
+                productRows.splice(0, 0, productHeader);
+
+                var resourceUtilisationHeader = ["Resource Utilisation"];
+                resourceUtilisationRows.splice(0,0, resourceUtilisationHeader);
+
+                var systemStateHeader = ["System State"];
+                systemStateRows.splice(0, 0, systemStateHeader);
+
+                var SBDetailsHeader = ["Active Schedule Block Details"];
+                totalSBDurationRow.splice(0, 0, SBDetailsHeader);
+
+                // -------------------------ADD NEW LINE ---------------------------------------------
+                var NewLine = [];
+                schedulerModeRows.push(NewLine);
+                subarraysRows.push(NewLine);
+                inMaintenanceRows.push(NewLine);
+                statesRows.push(NewLine);
+                bandsRows.push(NewLine);
+                productRows.push(NewLine);
+                resourceUtilisationRows.push(NewLine);
+                systemStateRows.push(NewLine);
+                totalSBDurationRow.push(NewLine);
+                activeSchedBlockRows.push(NewLine);
+
+                var data = schedulerModeRows.concat(
+                    subarraysRows, inMaintenanceRows, statesRows, bandsRows, productRows,
+                    resourceUtilisationRows, systemStateRows, totalSBDurationRow, activeSchedBlockRows
+                    );
+
+                // Download the sheet
+                var ws = XLSX.utils.aoa_to_sheet(data, {raw: true});
+                var wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Utilization-report");
+                XLSX.writeFile(wb, "Utilization-report.csv");
+                vm.exportingSpreadSheet = false;
+            };
+
             vm.createReport = function () {
                 vm.clearReportsData();
                 $state.go('utilisation-report', {
