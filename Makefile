@@ -4,18 +4,19 @@ SHELL := /bin/bash
 DATE_ID := $(shell date +"%y.%m.%d")
 # Get package name from pwd
 PACKAGE_NAME := $(shell basename $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+DOCKER_IMAGE_NAME := katgui
 
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
-import os, webbrowser, sys
+import webbrowser
 
 try:
-	from urllib import pathname2url
-except:
-	from urllib.request import pathname2url
-
-webbrowser.open("file://" + pathname2url(os.path.abspath(sys.argv[1])))
+    browser = webbrowser.get(using='google-chrome')
+except Exception:
+    browser = webbrowser.get(using='chrome')
+finally:
+    browser.open("http://localhost:8000/localhostindex.html")
 endef
 
 define PRINT_HELP_PYSCRIPT
@@ -35,7 +36,6 @@ export PRINT_HELP_PYSCRIPT
 export PYTHONWARNINGS=ignore
 
 PYTHON := python3
-BROWSER := $(PYTHON) -c "$$BROWSER_PYSCRIPT"
 
 .SILENT: help
 help:
@@ -44,16 +44,16 @@ help:
 # -------------------------------- Builds and Installations -----------------------------
 
 .PHONY: bootstrap
-bootstrap: install build-image run  ## Installs docker, and runs KATGUI webserver
+bootstrap: install-deps build-image run-detached view-katgui  ## Installs docker, runs KATGUI webserver and opens KATGUI on google-chrome
 
-build-new-image:  ## Pull the latest image and build docker image from local Dockerfile.
-	docker-compose build --pull
+build-new-image:  ## Pull the latest base-image and build docker image from local Dockerfile.
+	docker build --pull -f ./Dockerfile -t $(DOCKER_IMAGE_NAME) .
 
 build-image:  ## Build docker image from local Dockerfile.
-	docker-compose build
+	docker build -f ./Dockerfile -t $(DOCKER_IMAGE_NAME) .
 
 dist:  ## Build dist files.
-	docker-compose run $(PACKAGE_NAME) gulp build
+	docker run -ti --rm -v "${PWD}:/usr/src/app" $(DOCKER_IMAGE_NAME) gulp build
 	ls -l dist
 
 --check-os:
@@ -71,29 +71,30 @@ _install-docker:
 	bash -c "sudo bash get-docker.sh"
 	rm -rf get-docker.sh
 
-_install-docker-compose:
-	echo "Installing docker-compose..."
-	$(PYTHON) -m pip install -U docker-compose
-
 .SILENT: --check-os install
-install: --check-os  ## Check if docker and docker-compose exists, if not install them on host
+install-deps: --check-os  ## Check if docker exists, if not install them on host
 	if [ ! -x "$$(command -v docker)" ]; then \
 		$(MAKE) _install-docker
 	else \
 		echo "Docker is already installed."; \
 	fi; \
-	if [ ! -x "$$(command -v docker-compose)" ]; then \
-		$(MAKE) _install-docker-compose
-	else \
-		echo "docker-compose is already installed."; \
-	fi; \
 
 # -------------------------------------- Project Execution -------------------------------
 run:  ## Run KATGUI webserver
-	docker-compose up
+	docker run --name katgui-webserver \
+	-ti --rm -p 8000:8000 \
+	-v "${PWD}:/usr/src/app" $(DOCKER_IMAGE_NAME) gulp webserver
+
+run-detached:  ## Run KATGUI webserver (Runs in background)
+	docker run -d --name katgui-webserver \
+	-ti --rm -p 8000:8000 \
+	-v "${PWD}:/usr/src/app" $(DOCKER_IMAGE_NAME) gulp webserver
+
+view-katgui:  ## Access the KATGUI via chrome-browser
+	$(PYTHON) -c "$$BROWSER_PYSCRIPT"
 
 stop:  ## Stop KATGUI webserver
-	docker-compose stop
+	docker container kill katgui-webserver
 
 jenkins-build:
 	echo "## Updating mkatgui code from git ...";
@@ -113,9 +114,6 @@ clean-build:  ## Remove build artefacts.
 
 clean-node-modules:  ## Remove node_modules artefacts.
 	rm -rf node_modules
-
-clean-docker:  ## Remove docker container.
-	docker-compose rm -sf
 
 # -------------------------------------- Code Style  -------------------------------------
 

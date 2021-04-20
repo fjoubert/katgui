@@ -83,33 +83,42 @@ Running `make` inside the directory will output useful function as shown below:
 $ make
 Please use `make <target>` where <target> is one of
 
-bootstrap            - Installs docker, and runs KATGUI webserver
-build-new-image      - Pull the latest image and build docker image from local Dockerfile.
+bootstrap            - Installs docker, runs KATGUI webserver and opens KATGUI on google-chrome
+build-new-image      - Pull the latest base-image and build docker image from local Dockerfile.
 build-image          - Build docker image from local Dockerfile.
 dist                 - Build dist files.
-install              - Check if docker and docker-compose exists, if not install them on host
+install-deps         - Check if docker exists, if not install them on host
 run                  - Run KATGUI webserver
+run-detached         - Run KATGUI webserver (Runs in background)
+view-katgui          - Access the KATGUI via chrome-browser
 stop                 - Stop KATGUI webserver
 clean                - Remove all build, node_modules and docker containers.
 clean-build          - Remove build artefacts.
 clean-node-modules   - Remove node_modules artefacts.
-clean-docker         - Remove docker container.
 lint                 - Check style with `eslint`
 formatter            - Format style with ...
 test                 - Run tests
 ```
 
-If you do not have docker and docker-compose installed run:
+### Usage
+
+The command below checks and installs `docker` if it's missing, then builds `katgui` docker container before running it, and finally opens up KATGUI on google-chrome tab.
+
+```bash
+make bootstrap
+```
+
+Alternatively, 
+If you do not have docker installed run:
 
 ```bash
 make install
 ```
 
-This should install docker and docker-compose automatically.
+This should install docker automatically.
 
 **Note:** This currently applies to Ubuntu/Debian users.
 
-### Usage
 
 In order to use KATGUI for development/debugging/demo run:
 
@@ -117,9 +126,8 @@ In order to use KATGUI for development/debugging/demo run:
 make run
 ```
 
-Which will build and startup a container and exposes port 8000.
-
-Access the KATGUI: [http://localhost:8000/localhostindex.html](http://localhost:8000/localhostindex.html)
+- Which will build and startup a container which exposes port 8000.
+- Access the KATGUI: [http://localhost:8000/localhostindex.html](http://localhost:8000/localhostindex.html)
 
 You should see the development KATGUI, enter your development box **URL, Username and Password**.
 
